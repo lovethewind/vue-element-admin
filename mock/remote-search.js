@@ -5,21 +5,22 @@ const count = 100
 
 for (let i = 0; i < count; i++) {
   NameList.push(Mock.mock({
-    name: '@first'
+    name: '@cfirst' + '@clast'
   }))
 }
-NameList.push({ name: 'mock-Pan' })
+// NameList.push({ name: 'mock-Pan' })
 
 module.exports = [
   // username search
   {
-    url: '/vue-element-admin/search/user',
+    url: '/admin/search/user',
     type: 'get',
     response: config => {
       const { name } = config.query
       const mockNameList = NameList.filter(item => {
-        const lowerCaseName = item.name.toLowerCase()
-        return !(name && lowerCaseName.indexOf(name.toLowerCase()) < 0)
+        // const lowerCaseName = item.name.toLowerCase()
+        // return !(name && lowerCaseName.indexOf(name.toLowerCase()) < 0)
+        return !(name)
       })
       return {
         code: 20000,
@@ -30,7 +31,7 @@ module.exports = [
 
   // transaction list
   {
-    url: '/vue-element-admin/transaction/list',
+    url: '/admin/transaction/list',
     type: 'get',
     response: _ => {
       return {

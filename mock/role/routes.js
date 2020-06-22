@@ -314,33 +314,33 @@ const asyncRoutes = [
   },
 
   {
-    path: '/example',
+    path: '/article',
     component: 'layout/Layout',
-    redirect: '/example/list',
-    name: 'Example',
+    redirect: '/article/list',
+    name: 'Article',
     meta: {
-      title: 'Example',
-      icon: 'example'
+      title: '文章管理',
+      icon: 'article'
     },
     children: [
       {
         path: 'create',
-        component: 'views/example/create',
+        component: 'views/article/create',
         name: 'CreateArticle',
-        meta: { title: 'Create Article', icon: 'edit' }
+        meta: { title: '新建文章', icon: 'edit' }
       },
       {
         path: 'edit/:id(\\d+)',
-        component: 'views/example/edit',
+        component: 'views/article/edit',
         name: 'EditArticle',
-        meta: { title: 'Edit Article', noCache: true },
+        meta: { title: '编辑文章', noCache: true },
         hidden: true
       },
       {
         path: 'list',
-        component: 'views/example/list',
+        component: 'views/article/list',
         name: 'ArticleList',
-        meta: { title: 'Article List', icon: 'list' }
+        meta: { title: '文章列表', icon: 'list' }
       }
     ]
   },

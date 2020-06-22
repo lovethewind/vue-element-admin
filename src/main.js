@@ -20,6 +20,8 @@ import './utils/error-log' // error log
 
 import * as filters from './filters' // global filters
 
+// eslint-disable-next-line no-unused-vars
+import $ from 'jquery'
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

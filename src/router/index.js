@@ -29,7 +29,7 @@ import nestedRouter from './modules/nested'
     noCache: true                if set true, the page will no be cached(default is false)
     affix: true                  if set true, the tag will affix in the tags-view
     breadcrumb: false            if set false, the item will hidden in breadcrumb(default is true)
-    activeMenu: '/example/list'  if set path, the sidebar will highlight the path you set
+    activeMenu: '/article/list'  if set path, the sidebar will highlight the path you set
   }
  */
 
@@ -191,33 +191,33 @@ export const asyncRoutes = [
   tableRouter,
 
   {
-    path: '/example',
+    path: '/article',
     component: Layout,
-    redirect: '/example/list',
-    name: 'Example',
+    redirect: '/article/list',
+    name: 'Article',
     meta: {
-      title: 'Example',
+      title: '文章管理',
       icon: 'el-icon-s-help'
     },
     children: [
       {
         path: 'create',
-        component: () => import('@/views/example/create'),
+        component: () => import('@/views/article/create'),
         name: 'CreateArticle',
-        meta: { title: 'Create Article', icon: 'edit' }
+        meta: { title: '新建文章', icon: 'edit' }
       },
       {
         path: 'edit/:id(\\d+)',
-        component: () => import('@/views/example/edit'),
+        component: () => import('@/views/article/edit'),
         name: 'EditArticle',
-        meta: { title: 'Edit Article', noCache: true, activeMenu: '/example/list' },
+        meta: { title: '编辑文章', noCache: true, activeMenu: '/article/list' },
         hidden: true
       },
       {
         path: 'list',
-        component: () => import('@/views/example/list'),
+        component: () => import('@/views/article/list'),
         name: 'ArticleList',
-        meta: { title: 'Article List', icon: 'list' }
+        meta: { title: '文章列表', icon: 'list' }
       }
     ]
   },
