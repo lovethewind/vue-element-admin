@@ -42,15 +42,6 @@ module.exports = {
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
     // it can be accessed in index.html to inject the correct title.
-    plugins: [
-      new webpack.ProvidePlugin({
-        'window.Quill': 'quill/dist/quill.js',
-        'Quill': 'quill/dist/quill.js',
-        $: 'jquery',
-        jQuery: 'jquery',
-        'windows.jQuery': 'jquery'
-      })
-    ],
     name: name,
     resolve: {
       alias: {
@@ -63,6 +54,11 @@ module.exports = {
     // config.plugins.delete('preload')
 
     // when there are many pages, it will cause too many meaningless requests
+    config.plugin('provide').use(webpack.ProvidePlugin, [{
+      'window.Quill': 'quill/dist/quill.js',
+      'Quill': 'quill/dist/quill.js'
+    }])
+
     config.plugins.delete('prefetch')
 
     // set svg-sprite-loader

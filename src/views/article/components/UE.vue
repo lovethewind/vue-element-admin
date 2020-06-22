@@ -1,8 +1,7 @@
 <template>
   <div ref="editor" class="ue">
     <VEmojiPicker
-      :key="'emoji_'+id"
-      v-model="emoji"
+      :id="'emoji_'+id"
       lang="pt-BR"
       :emojis-by-row="10"
       :show-search="false"
@@ -307,8 +306,8 @@ export default {
       default: null
     },
     updateContent: {
-      type: Text,
-      default: '  '
+      type: String,
+      default: ''
     }},
   data() {
     return {
@@ -385,7 +384,7 @@ export default {
   },
   methods: {
     toogleDialogEmoji() {
-      // var emoji_id = '#'
+      var vm = this
       // eslint-disable-next-line no-undef
       layer.open({
         title: '添加表情',
@@ -393,7 +392,10 @@ export default {
         offset: ['30%', '60%'],
         shade: [0.001, '#393D49'],
         shadeClose: true,
-        content: this.emoji // 这里content是一个id绑定的元素
+        content: $('#' + 'emoji_' + this.id), // 这里content是一个id绑定的元素
+        end: function() {
+          $('#' + 'emoji_' + vm.id).style.display = 'none'
+        }
       })
     },
     onSelectEmoji(emoji) {
@@ -512,15 +514,6 @@ export default {
         ia[i] = bytes.charCodeAt(i)
       }
       return new Blob([ab], { type: 'image/png' })
-      // let arr = urlData.split(',');
-      // let mime = arr[0].match(/:(.*?);/)[1];
-      // let bytes = atob(arr[1]); // 解码base64
-      // let n = bytes.length
-      // let ia = new Uint8Array(n);
-      // while (n--) {
-      //   ia[n] = bytes.charCodeAt(n);
-      // }
-      // return new File([ia], fileName, { type: mime });
     },
     // 得到选择的视频信息
     getVideoInfo(file) {
@@ -619,7 +612,8 @@ export default {
       } else {
         this.contentLength = e.text.trim().length
       }
-      this.$emit(this.update_content, this.content, e.text.trim().length)
+      // eslint-disable-next-line no-undef
+      this.$emit('editor_article', this.content, this.contentLength)
     }, // 内容改变事件
     saveHtml: function(event) {
       alert(this.content)
@@ -659,19 +653,11 @@ $(window).scroll(function() {
     return false
   }
   for (var i = 0; i < tool_bar.length; i++) {
-    // var clientHeight = 0;
-    // if(document.body.clientHeight&&document.documentElement.clientHeight){
-    //   clientHeight=(document.body.clientHeight<document.documentElement.clientHeight)?document.body.clientHeight:document.documentElement.clientHeight;
-    // }else {
-    //   clientHeight = (document.body.clientHeight > document.documentElement.clientHeight) ? document.body.clientHeight : document.documentElement.clientHeight;
-    // }
     var offsetTop = $(tool_bar[i]).offset().top
     // eslint-disable-next-line no-unused-vars
     var scrollHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight)
     var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
     var wh = $(window).height()
-    // var bottomHeight = scrollHeight - scrollTop - clientHeight;
-    // console.log("窗口高度:",wh,"  ","quill-editor距离顶部高度：",offsetTop,"卷去的高度:",scrollTop,"距离窗口顶部高度：",offsetTop - scrollTop);
     if (($(tool_bar[i].children[0]).innerHeight() + 20) < (offsetTop - scrollTop) < wh) { // 当toolbar进入窗口时
       if (scrollTop > offsetTop && scrollTop <= ($(tool_bar[i]).innerHeight() + offsetTop) - ($(tool_bar[i].children[0]).innerHeight() + 20)) {
         tool_bar[i].children[0].classList.add('toolbar_fixed')
@@ -685,14 +671,6 @@ $(window).scroll(function() {
     }
   }
 })
-// window.onload = function () {
-//   // var _iframe = document.getElementsByClassName('ql-video').contentWindow.document.getElementsByName('media')   //get iframe下的id
-//     var my_video = document.getElementsByTagName("video");
-//     console.log(my_video);
-//     for (i=0;i<my_video.length;i++){
-//       my_video[i].style.width = "100%";  //修改样式
-//     }
-// }
 </script>
 
 <style lang="scss">

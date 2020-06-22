@@ -19,7 +19,14 @@ import './permission' // permission control
 import './utils/error-log' // error log
 
 import * as filters from './filters' // global filters
-
+import VEmojiPicker from 'v-emoji-picker'
+import '@/../public/layui/css/layui.css'
+import '@/../public/css/monokai-sublime.css'
+import '@/../public/font-awesome/css/font-awesome.min.css'
+import '@/../public/katex/katex.css'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 // eslint-disable-next-line no-unused-vars
 import $ from 'jquery'
 /**
@@ -38,8 +45,7 @@ if (process.env.NODE_ENV === 'production') {
 Vue.use(Element, {
   size: Cookies.get('size') || 'medium' // set element-ui default size
   // locale: enLang // 如果使用中文，无需设置，请删除
-})
-
+}, VEmojiPicker)
 // register global utility filters
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])

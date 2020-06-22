@@ -1,5 +1,4 @@
 // use layer global
-// eslint-disable-next-line no-undef
 layer = layui.use(['layer']).layer
 // get_clear_html_tag
 // eslint-disable-next-line no-unused-vars

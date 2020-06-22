@@ -1,6 +1,6 @@
 <template>
   <div class="createPost-container">
-    <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container" label-width="80px">
+    <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container" label-width="80px" @submit.native.prevent>
 
       <sticky :z-index="10" :class-name="'sub-navbar '+postForm.status">
         <CommentDropdown v-model="postForm.comment_disabled" />
@@ -26,7 +26,7 @@
             <div class="postInfo-container">
               <el-row>
                 <el-col :span="8">
-                  <el-form-item  label="作者:" class="postInfo-container-item">
+                  <el-form-item label="作者:" class="postInfo-container-item">
                     <el-select v-model="postForm.author" :remote-method="getRemoteUserList" filterable default-first-option remote placeholder="搜索用户">
                       <el-option v-for="(item,index) in userListOptions" :key="item+index" :label="item" :value="item" />
                     </el-select>
@@ -34,13 +34,13 @@
                 </el-col>
 
                 <el-col :span="10">
-                  <el-form-item  label="发布时间:" class="postInfo-container-item">
+                  <el-form-item label="发布时间:" class="postInfo-container-item">
                     <el-date-picker v-model="displayTime" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期和时间" />
                   </el-form-item>
                 </el-col>
 
                 <el-col :span="6">
-                  <el-form-item  label="重要程度:" class="postInfo-container-item">
+                  <el-form-item label="重要程度:" class="postInfo-container-item">
                     <el-rate
                       v-model="postForm.importance"
                       :max="3"
@@ -56,9 +56,9 @@
           </el-col>
         </el-row>
 
-        <el-form-item style="margin-bottom: 40px;"  label="简要描述:">
+        <el-form-item style="margin-bottom: 40px;" label="简要描述:">
           <el-input v-model="postForm.content_short" :rows="1" type="textarea" class="article-textarea" autosize placeholder="输入简要描述" />
-          <br/><span v-show="contentShortLength" class="word-counter">已输入{{ contentShortLength }}个字符</span>
+          <br><span v-show="contentShortLength" class="word-counter">已输入{{ contentShortLength }}个字符</span>
         </el-form-item>
 
         <el-form-item prop="content" label="正文:" style="margin-bottom: 30px;">
@@ -137,6 +137,7 @@ export default {
       postForm: Object.assign({}, defaultForm),
       loading: false,
       userListOptions: [],
+      article_content_length: '', // 修改的文章内容的长度（纯文本)
       rules: {
         image_uri: [{ validator: validateRequire }],
         title: [{ validator: validateRequire }],
@@ -176,16 +177,16 @@ export default {
   },
   methods: {
     editor_article(editor_article, length) {
-      this.content = editor_article
+      this.postForm.content = editor_article
       this.article_content_length = length
+      console.log('UE传来的值:', editor_article)
     },
     fetchData(id) {
       fetchArticle(id).then(response => {
         this.postForm = response.data
-
         // just for test
-        this.postForm.title += `   Article Id:${this.postForm.id}`
-        this.postForm.content_short += `   Article Id:${this.postForm.id}`
+        this.postForm.title += `   我是标题:${this.postForm.id}`
+        this.postForm.content_short += `   我是简介:${this.postForm.id}`
 
         // set tagsview title
         this.setTagsViewTitle()
@@ -197,7 +198,7 @@ export default {
       })
     },
     setTagsViewTitle() {
-      const title = 'Edit Article'
+      const title = '编辑文章'
       const route = Object.assign({}, this.tempRoute, { title: `${title}-${this.postForm.id}` })
       this.$store.dispatch('tagsView/updateVisitedView', route)
     },
