@@ -49,6 +49,16 @@ module.exports = {
       }
     }
   },
+  // configureWebpack: {
+  //   plugins: [
+  //     new webpack.ProvidePlugin({
+  //       $: 'jquery',
+  //       jQuery: 'jquery',
+  //       'window.jQuery': 'jquery',
+  //       'window.$': 'jquery'
+  //     })
+  //   ]
+  // },
   chainWebpack(config) {
     // it can improve the speed of the first screen, it is recommended to turn on preload
     // config.plugins.delete('preload')

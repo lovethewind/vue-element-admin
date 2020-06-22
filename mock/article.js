@@ -21,6 +21,7 @@ for (let i = 0; i < count; i++) {
     'status|1': ['已发布', '草稿'],
     'top|1': ['已置顶', '未置顶'],
     'recommend|1': ['已推荐', '未推荐'],
+    category: '@integer(1,4)',
     display_time: '@datetime',
     comment_disabled: true,
     pageviews: '@integer(300, 5000)',

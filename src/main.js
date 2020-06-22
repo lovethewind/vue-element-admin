@@ -27,8 +27,7 @@ import '@/../public/katex/katex.css'
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
-// eslint-disable-next-line no-unused-vars
-import $ from 'jquery'
+import '@/../public/css/font.css'
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

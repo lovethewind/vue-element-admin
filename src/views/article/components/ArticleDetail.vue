@@ -1,7 +1,6 @@
 <template>
   <div class="createPost-container">
     <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container" label-width="80px" @submit.native.prevent>
-
       <sticky :z-index="10" :class-name="'sub-navbar '+postForm.status">
         <CommentDropdown v-model="postForm.comment_disabled" />
         <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">
@@ -14,12 +13,10 @@
 
       <div class="createPost-main-container">
         <el-row>
-          <Warning />
-
           <el-col :span="24">
-            <el-form-item style="margin-bottom: 40px;" prop="title">
+            <el-form-item label="标题:" style="margin-bottom: 40px;" prop="title">
               <MDinput v-model="postForm.title" :maxlength="100" name="name" required>
-                标题
+                这里填写标题
               </MDinput>
             </el-form-item>
 
@@ -40,14 +37,14 @@
                 </el-col>
 
                 <el-col :span="6">
-                  <el-form-item label="重要程度:" class="postInfo-container-item">
-                    <el-rate
-                      v-model="postForm.importance"
-                      :max="3"
-                      :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                      :low-threshold="1"
-                      :high-threshold="3"
-                      style="display:inline-block"
+                  <el-form-item label="分类:" prop="category" class="postInfo-container-item">
+                    <el-cascader
+                      ref="cascader"
+                      v-model="postForm.category"
+                      :options="options"
+                      expand-trigger="hover"
+                      :props="optionProps"
+                      :show-all-levels="false"
                     />
                   </el-form-item>
                 </el-col>
@@ -77,7 +74,6 @@ import Sticky from '@/components/Sticky' // 粘性header组件
 import { validURL } from '@/utils/validate'
 import { fetchArticle } from '@/api/article'
 import { searchUser } from '@/api/remote-search'
-import Warning from './Warning'
 // import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
 import { CommentDropdown } from './Dropdown'
 import UE from '@/views/article/components/UE'
@@ -93,12 +89,13 @@ const defaultForm = {
   id: undefined,
   platforms: ['电脑端'],
   comment_disabled: false,
-  importance: 0
+  importance: 0,
+  category: 1
 }
 
 export default {
   name: 'ArticleDetail',
-  components: { UE, MDinput, Sticky, Warning, CommentDropdown },
+  components: { UE, MDinput, Sticky, CommentDropdown },
   // components: { Tinymce, MDinput, Sticky, Warning, CommentDropdown },
   props: {
     isEdit: {
@@ -138,11 +135,82 @@ export default {
       loading: false,
       userListOptions: [],
       article_content_length: '', // 修改的文章内容的长度（纯文本)
+      options: [
+        {
+          id: 1,
+          name: '根目录'
+        },
+        {
+          id: 2,
+          name: '我要学习',
+          children: [
+            {
+              id: 21,
+              name: '前端开发'
+            },
+            {
+              id: 22,
+              name: '后端开发'
+            }
+          ]
+        },
+        {
+          id: 3,
+          name: '心情杂谈',
+          children: [
+            {
+              id: 31,
+              name: '故事分享'
+            },
+            {
+              id: 32,
+              name: '讨论咨询'
+            }
+          ]
+        },
+        {
+          id: 4,
+          name: '资源分享',
+          children: [
+            {
+              id: 41,
+              name: '音乐'
+            },
+            {
+              id: 42,
+              name: '视频'
+            },
+            {
+              id: 43,
+              name: '其他'
+            }
+          ]
+        },
+        {
+          id: 5,
+          name: '通知公告',
+          disabled: true
+        }
+      ],
+      optionProps: {
+        value: 'id',
+        label: 'name',
+        checkStrictly: 'true'
+        // multiple:"true"
+      },
       rules: {
         image_uri: [{ validator: validateRequire }],
         title: [{ validator: validateRequire }],
         content: [{ validator: validateRequire }],
-        source_uri: [{ validator: validateSourceUri, trigger: 'blur' }]
+        source_uri: [{ validator: validateSourceUri, trigger: 'blur' }],
+        category: [
+          {
+            type: 'array',
+            required: true,
+            message: '请选择一个分类',
+            trigger: 'blur'
+          }
+        ]
       },
       tempRoute: {}
     }
@@ -169,7 +237,6 @@ export default {
       const id = this.$route.params && this.$route.params.id
       this.fetchData(id)
     }
-
     // Why need to make a copy of this.$route here?
     // Because if you enter this page and quickly switch tag, may be in the execution of the setTagsViewTitle function, this.$route is no longer pointing to the current page
     // https://github.com/PanJiaChen/vue-element-admin/issues/1221
@@ -185,12 +252,13 @@ export default {
       fetchArticle(id).then(response => {
         this.postForm = response.data
         // just for test
+        setTimeout(() => {
+          this.$refs.ueditor.setDefault(this.postForm.content) // 给ue设置文章内容
+        }, 100)
         this.postForm.title += `   我是标题:${this.postForm.id}`
         this.postForm.content_short += `   我是简介:${this.postForm.id}`
-
         // set tagsview title
         this.setTagsViewTitle()
-
         // set page title
         this.setPageTitle()
       }).catch(err => {
@@ -251,7 +319,11 @@ export default {
   }
 }
 </script>
-
+<style>
+  .ql-editor {
+    min-height: 200px;
+  }
+</style>
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
 
@@ -285,7 +357,7 @@ export default {
     padding-right: 40px;
     resize: none;
     border: none;
-    border-radius: 0px;
+    border-radius: 0;
     border-bottom: 1px solid #bfcbd9;
   }
 }

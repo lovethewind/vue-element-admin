@@ -793,7 +793,7 @@ $(window).scroll(function() {
   }
 }
 .el-dialog__body {
-  padding: 0px 20px;
+  padding: 0 20px;
 }
 .el-upload.el-upload--text {
   width: 100%;
@@ -835,7 +835,7 @@ $(window).scroll(function() {
   .toolbar_fixed {
     position: fixed;
     background: white;
-    top: 0;
+    top: 50px;
     z-index: 999;
   }
   iframe{
