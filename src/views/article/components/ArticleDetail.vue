@@ -1,6 +1,13 @@
 <template>
   <div class="createPost-container">
-    <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container" label-width="80px" @submit.native.prevent>
+    <el-form
+      ref="postForm"
+      :model="postForm"
+      :rules="rules"
+      class="form-container"
+      label-width="80px"
+      @submit.native.prevent
+    >
       <sticky :z-index="10" :class-name="'sub-navbar '+postForm.status">
         <CommentDropdown v-model="postForm.comment_disabled" />
         <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">
@@ -24,15 +31,27 @@
               <el-row>
                 <el-col :span="8">
                   <el-form-item label="作者:" class="postInfo-container-item">
-                    <el-select v-model="postForm.author" :remote-method="getRemoteUserList" filterable default-first-option remote placeholder="搜索用户">
+                    <el-select
+                      v-model="postForm.author"
+                      :remote-method="getRemoteUserList"
+                      filterable
+                      default-first-option
+                      remote
+                      placeholder="搜索用户"
+                    >
                       <el-option v-for="(item,index) in userListOptions" :key="item+index" :label="item" :value="item" />
                     </el-select>
                   </el-form-item>
                 </el-col>
 
-                <el-col :span="10">
+                <el-col :span="8">
                   <el-form-item label="发布时间:" class="postInfo-container-item">
-                    <el-date-picker v-model="displayTime" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期和时间" />
+                    <el-date-picker
+                      v-model="displayTime"
+                      type="datetime"
+                      format="yyyy-MM-dd HH:mm:ss"
+                      placeholder="选择日期和时间"
+                    />
                   </el-form-item>
                 </el-col>
 
@@ -53,10 +72,31 @@
           </el-col>
         </el-row>
 
-        <el-form-item style="margin-bottom: 40px;" label="简要描述:">
-          <el-input v-model="postForm.content_short" :rows="1" type="textarea" class="article-textarea" autosize placeholder="输入简要描述" />
-          <br><span v-show="contentShortLength" class="word-counter">已输入{{ contentShortLength }}个字符</span>
-        </el-form-item>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="是否推荐:" class="postInfo-container-item">
+              <el-switch
+                v-model="postForm.recommend"
+                active-text="推荐"
+                inactive-text="不推荐"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="是否置顶:" class="postInfo-container-item">
+              <el-switch
+                v-model="postForm.top"
+                active-text="置顶"
+                inactive-text="不置顶"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <!--        <el-form-item style="margin-bottom: 40px;" label="简要描述:">-->
+        <!--          <el-input v-model="postForm.content_short" :rows="1" type="textarea" class="article-textarea" autosize placeholder="输入简要描述" />-->
+        <!--          <br><span v-show="contentShortLength" class="word-counter">已输入{{ contentShortLength }}个字符</span>-->
+        <!--        </el-form-item>-->
 
         <el-form-item prop="content" label="正文:" style="margin-bottom: 30px;">
           <UE id="ueditor" ref="ueditor" update_content="editor_article" @editor_article="editor_article" />
@@ -87,10 +127,11 @@ const defaultForm = {
   image_uri: '', // 文章图片
   display_time: undefined, // 前台展示时间
   id: undefined,
-  platforms: ['电脑端'],
   comment_disabled: false,
   importance: 0,
-  category: 1
+  category: 1,
+  recommend: false,
+  top: false
 }
 
 export default {
@@ -325,40 +366,40 @@ export default {
   }
 </style>
 <style lang="scss" scoped>
-@import "~@/styles/mixin.scss";
+  @import "~@/styles/mixin.scss";
 
-.createPost-container {
-  position: relative;
+  .createPost-container {
+    position: relative;
 
-  .createPost-main-container {
-    padding: 40px 45px 20px 50px;
+    .createPost-main-container {
+      padding: 40px 45px 20px 50px;
 
-    .postInfo-container {
-      position: relative;
-      @include clearfix;
-      margin-bottom: 10px;
+      .postInfo-container {
+        position: relative;
+        @include clearfix;
+        margin-bottom: 10px;
 
-      .postInfo-container-item {
-        float: left;
+        .postInfo-container-item {
+          float: left;
+        }
       }
+    }
+
+    .word-counter {
+      width: 140px;
+      font-size: 12px;
+      position: static;
+      float: right;
     }
   }
 
-  .word-counter {
-    width: 140px;
-    font-size: 12px;
-    position: static;
-    float: right;
+  .article-textarea ::v-deep {
+    textarea {
+      padding-right: 40px;
+      resize: none;
+      border: none;
+      border-radius: 0;
+      border-bottom: 1px solid #bfcbd9;
+    }
   }
-}
-
-.article-textarea ::v-deep {
-  textarea {
-    padding-right: 40px;
-    resize: none;
-    border: none;
-    border-radius: 0;
-    border-bottom: 1px solid #bfcbd9;
-  }
-}
 </style>

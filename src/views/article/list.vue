@@ -29,23 +29,17 @@
 
       <el-table-column width="90px" align="center" label="置顶">
         <template slot-scope="{row}">
-          <el-tag :type="row.top | statusFilter">
-            {{ row.top }}
+          <el-tag :type="row.top?'success':'info'">
+            {{ row.top?'已置顶':'未置顶' }}
           </el-tag>
         </template>
       </el-table-column>
 
       <el-table-column width="90px" align="center" label="推荐">
         <template slot-scope="{row}">
-          <el-tag :type="row.recommend | statusFilter">
-            {{ row.recommend }}
+          <el-tag :type="row.recommend?'success':'info'">
+            {{ row.recommend?'已推荐':'未推荐' }}
           </el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="100px" label="重要度">
-        <template slot-scope="scope">
-          <svg-icon v-for="n in +scope.row.importance" :key="n" icon-class="star" class="meta-item__icon" />
         </template>
       </el-table-column>
 
