@@ -1,7 +1,12 @@
 <template>
   <div v-if="list" class="app-container">
-    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].status" style="text-align: left;height: 100px;background: rgba(0,0,0,0.08)">
-      <el-input v-model="search_content" placeholder="请输入标题/作者/内容搜索" style="width: 250px;margin-right: 20px">搜索</el-input>
+    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].user.is_staff">
+      <el-input v-model="search_content" placeholder="请输入用户名/邮箱/手机号" style="width: 200px;margin-right: 20px">搜索</el-input>
+      <el-select v-model="search_sex" style="width: 120px;margin-right: 20px" placeholder="性别">
+        <el-option label="男" value="1" />
+        <el-option label="女" value="0" />
+        <el-option label="保密" value="3" />
+      </el-select>
       <el-date-picker
         v-model="search_date"
         type="datetimerange"
@@ -9,101 +14,117 @@
         range-separator="至"
         start-placeholder="开始日期"
         end-placeholder="结束日期"
-        align="right"
+        align="left"
         style="margin-right: 20px"
       />
-      <el-select v-model="search_top" style="width: 120px;margin-right: 20px" placeholder="是否置顶">
-        <el-option label="已置顶" value="1" />
-        <el-option label="未置顶" value="0" />
-      </el-select>
-      <el-select v-model="search_recommend" style="width: 120px;margin-right: 20px" placeholder="是否推荐">
-        <el-option label="已推荐" value="1" />
-        <el-option label="未推荐" value="0" />
-      </el-select>
-      <el-button type="success" icon="el-icon-search" style="margin-right: 30px">搜索</el-button>
-      <p style="text-align: left">
-        <el-button type="success" icon="fa fa-chevron-up" style="margin-left: 63px"> 全部置顶</el-button>
-        <el-button type="success" icon="fa fa-chevron-up" style="margin-left: 30px"> 全部推荐</el-button>
-        <el-button type="danger" icon="el-icon-delete" style="margin-left: 30px">全部删除</el-button>
-      </p>
+      <el-button type="success" icon="el-icon-search" style="margin-right: 10px">搜索</el-button>
+      <el-button type="info" icon="fa fa-minus-circle"> 批量禁用</el-button>
+      <el-button type="danger" icon="el-icon-delete">批量删除</el-button>
     </sticky>
     <el-divider />
-    <el-table v-loading="listLoading" :data="list" :default-sort="{prop: 'timestamp', order: 'descending'}" border fit highlight-current-row style="width: 100%">
+    <el-table v-loading="listLoading" :data="list" :default-sort="{prop: 'last_login', order: 'descending'}" border fit highlight-current-row style="width: 100%">
       <el-table-column
         type="selection"
         width="40"
-        fixed
         style="text-align: center"
+        fixed
         @selection-change="handleSelectionChange"
       />
-      <el-table-column align="center" label="ID" width="80">
+      <el-table-column align="center" label="ID" width="60">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="头像" width="80">
+        <template slot-scope="scope">
+          <img :src="scope.row.headimg" style="width: 40px;height: 40px;cursor: pointer;border-radius: 5px">
+        </template>
+      </el-table-column>
 
-      <el-table-column label="标题" width="220px">
+      <el-table-column label="用户名" width="120px">
         <template slot-scope="{row}">
           <router-link :to="'/article/edit/'+row.id" class="link-type">
-            <span>{{ row.title }}</span>
+            <span>{{ row.user.username }}</span>
           </router-link>
         </template>
       </el-table-column>
 
-      <el-table-column width="120px" align="center" label="作者">
+      <el-table-column width="60px" align="center" label="性别">
         <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
+          <span>{{ scope.row.sex === 'male'?'男':'女' }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="180px" prop="timestamp" sortable align="center" label="发布时间">
+      <el-table-column width="60px" align="center" label="年龄">
         <template slot-scope="scope">
-          <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ scope.row.age }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="120px" prop="view_count" sortable align="center" label="查看/评论">
-        <template slot-scope="scope">
-          <span>{{ scope.row.view_count }} / {{ scope.row.comment_count }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="120px" prop="like_count" sortable align="center" label="喜欢/收藏">
-        <template slot-scope="scope">
-          <span>{{ scope.row.like_count }} / {{ scope.row.collect_count }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="90px" align="center" prop="top" sortable label="置顶">
+      <el-table-column width="120px" align="center" sortable label="地址">
         <template slot-scope="{row}">
-          <el-tag :type="row.top?'success':'info'">
-            {{ row.top?'已置顶':'未置顶' }}
+          <span>{{ row.address }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" width="140px" label="头衔">
+        <template slot-scope="scope">
+          <span>{{ scope.row.touxian }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" width="180px" label="签名">
+        <template slot-scope="scope">
+          <span>{{ scope.row.sign.substring(0,10) }}...</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" width="180px" label="手机号">
+        <template slot-scope="scope">
+          <span>{{ scope.row.user.phone }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" width="180px" label="邮箱">
+        <template slot-scope="scope">
+          <span>{{ scope.row.user.email }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="160px" prop="last_login" sortable align="center" label="上次登录时间">
+        <template slot-scope="scope">
+          <span>{{ scope.row.user.last_login | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="160px" prop="last_login" sortable align="center" label="注册时间">
+        <template slot-scope="scope">
+          <span>{{ scope.row.user.join_date | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="120px" align="center" prop="is_staff" sortable label="是否管理员">
+        <template slot-scope="{row}">
+          <el-tag :type="row.user.is_staff?'success':'info'">
+            {{ row.user.is_staff?'是':'否' }}
           </el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column width="90px" align="center" prop="recommend" sortable label="推荐">
+      <el-table-column width="120px" align="center" prop="is_staff" sortable label="状态">
         <template slot-scope="{row}">
-          <el-tag :type="row.recommend?'success':'info'">
-            {{ row.recommend?'已推荐':'未推荐' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column class-name="status-col" label="状态" prop="status" sortable width="90">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status === 'draft'?'草稿':'publish'?'已发布':'已删除' }}
+          <el-tag :type="row.user.status?'success':'info'">
+            {{ row.user.status?'可用':'禁用' }}
           </el-tag>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="操作" width="120" fixed="right">
         <template slot-scope="scope">
-          <router-link :to="'/article/edit/'+scope.row.id" title="编辑">
+          <router-link :to="'/author/edit/'+scope.row.id" title="编辑">
             <el-button type="primary" size="small" icon="el-icon-edit" />
           </router-link>
-          <router-link :to="'/article/edit/'+scope.row.id" title="删除">
+          <router-link :to="'/author/edit/'+scope.row.id" title="删除">
             <el-button type="danger" size="small" icon="el-icon-delete" />
           </router-link>
         </template>
@@ -115,12 +136,12 @@
 </template>
 
 <script>
-import { fetchList } from '@/api/article'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Sticky from '@/components/Sticky' // 粘性header组件
+import { getUserList } from '@/api/user'
 
 export default {
-  name: 'ArticleList',
+  name: 'UserList',
   components: { Pagination, Sticky },
   filters: {
     statusFilter(status) {
@@ -143,8 +164,7 @@ export default {
       },
       search_content: '',
       search_date: '',
-      search_recommend: '',
-      search_top: '',
+      search_sex: '',
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',
@@ -181,7 +201,8 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
+      getUserList(this.listQuery).then(response => {
+        console.log(response.data.items)
         this.list = response.data.items
         this.total = response.data.total
         this.listLoading = false

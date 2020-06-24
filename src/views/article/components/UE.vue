@@ -384,7 +384,6 @@ export default {
   },
   methods: {
     toogleDialogEmoji() {
-      var vm = this
       // eslint-disable-next-line no-undef
       layer.open({
         title: '添加表情',
@@ -394,7 +393,7 @@ export default {
         shadeClose: true,
         content: $('#' + 'emoji_' + this.id), // 这里content是一个id绑定的元素
         end: function() {
-          $('#' + 'emoji_' + vm.id).style.display = 'none'
+          // $('#' + 'emoji_' + vm.id).style.display = 'none'
         }
       })
     },
@@ -658,8 +657,8 @@ $(window).scroll(function() {
     var scrollHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight)
     var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
     var wh = $(window).height()
-    if (($(tool_bar[i].children[0]).innerHeight() + 20) < (offsetTop - scrollTop) < wh) { // 当toolbar进入窗口时
-      if (scrollTop > offsetTop && scrollTop <= ($(tool_bar[i]).innerHeight() + offsetTop) - ($(tool_bar[i].children[0]).innerHeight() + 20)) {
+    if (($(tool_bar[i].children[0]).innerHeight() + 20) < (offsetTop - scrollTop) < wh) { // 当toolbar进入窗口时, +50为sticky的高度
+      if (scrollTop + 50 > offsetTop && scrollTop <= ($(tool_bar[i]).innerHeight() + offsetTop) - ($(tool_bar[i].children[0]).innerHeight() + 20)) {
         tool_bar[i].children[0].classList.add('toolbar_fixed')
         $(tool_bar[i].children[0]).css('width', $(tool_bar[i]).innerWidth())
         $(tool_bar[i].children[0]).css('left', $(tool_bar[i]).offset().left)

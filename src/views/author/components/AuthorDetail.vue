@@ -10,28 +10,26 @@
     >
       <sticky :z-index="10" :class-name="'sub-navbar '+postForm.status">
         <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">
-          发布
+          确认修改
         </el-button>
         <el-button v-loading="loading" type="warning" @click="draftForm">
-          草稿
+          取消
         </el-button>
       </sticky>
 
       <div class="createPost-main-container">
         <el-row>
           <el-col :span="24">
-            <el-form-item label="标题:" style="margin-bottom: 40px;" prop="title">
-              <MDinput v-model="postForm.title" :maxlength="100" name="name">
-                这里填写标题
-              </MDinput>
+            <el-form-item label="头像:" style="margin-bottom: 40px;" prop="title">
+              <el-image :src="postForm.headimg" style="width: 60px;height: 60px;cursor: pointer;border-radius: 5px" />
             </el-form-item>
 
             <div class="postInfo-container">
               <el-row>
                 <el-col :span="8">
-                  <el-form-item label="作者:" class="postInfo-container-item">
+                  <el-form-item label="用户名:" class="postInfo-container-item">
                     <el-select
-                      v-model="postForm.author"
+                      v-model="postForm.user.username"
                       :remote-method="getRemoteUserList"
                       filterable
                       default-first-option
@@ -44,26 +42,16 @@
                 </el-col>
 
                 <el-col :span="8">
-                  <el-form-item label="发布时间:" class="postInfo-container-item">
-                    <el-date-picker
-                      v-model="displayTime"
-                      type="datetime"
-                      format="yyyy-MM-dd HH:mm:ss"
-                      placeholder="选择日期和时间"
-                    />
+                  <el-form-item label="性别:" class="postInfo-container-item">
+                    <el-radio v-model="postForm.sex" label="false">男</el-radio>
+                    <el-radio v-model="postForm.sex" label="true">女</el-radio>
+                    <el-radio v-model="postForm.sex" label="security">保密</el-radio>
                   </el-form-item>
                 </el-col>
 
                 <el-col :span="6">
-                  <el-form-item label="分类:" prop="category" class="postInfo-container-item">
-                    <el-cascader
-                      ref="cascader"
-                      v-model="postForm.category"
-                      :options="options"
-                      expand-trigger="hover"
-                      :props="optionProps"
-                      :show-all-levels="false"
-                    />
+                  <el-form-item label="年龄:" class="postInfo-container-item">
+                    <el-input-number v-model="postForm.age" :min="0" :max="140" />
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -73,28 +61,23 @@
 
         <el-row>
           <el-col :span="8">
-            <el-form-item label="推荐:" class="postInfo-container-item">
-              <el-switch
-                v-model="postForm.recommend"
-                active-text="推荐"
-                inactive-text="不推荐"
+            <el-form-item label="头衔" class="postInfo-container-item">
+              <el-input
+                v-model="postForm.touxian"
               />
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="置顶:" class="postInfo-container-item">
-              <el-switch
-                v-model="postForm.top"
-                active-text="置顶"
-                inactive-text="不置顶"
+            <el-form-item label="地址:" class="postInfo-container-item">
+              <el-input
+                v-model="postForm.address"
               />
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="评论:">
+            <el-form-item label="邮箱:">
               <!--          <CommentDropdown v-model="postForm.comment_disabled" />-->
-              <el-radio v-model="postForm.comment_disabled" label="false">允许评论</el-radio>
-              <el-radio v-model="postForm.comment_disabled" label="true">禁止评论</el-radio>
+              <el-input v-model="postForm.user.email" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -104,7 +87,7 @@
         <!--          <br><span v-show="contentShortLength" class="word-counter">已输入{{ contentShortLength }}个字符</span>-->
         <!--        </el-form-item>-->
 
-        <el-form-item prop="content" label="正文:" style="margin-bottom: 30px;">
+        <el-form-item prop="content" label="签名:" style="margin-bottom: 30px;">
           <UE id="ueditor" ref="ueditor" update_content="editor_article" @editor_article="editor_article" />
         </el-form-item>
       </div>
@@ -115,33 +98,37 @@
 <script>
 // import Tinymce from '@/components/Tinymce'
 // import Upload from '@/components/Upload/SingleImage3'
-import MDinput from '@/components/MDinput'
 import Sticky from '@/components/Sticky' // 粘性header组件
 import { validURL } from '@/utils/validate'
-import { fetchArticle } from '@/api/article'
+import { fetchAuthor } from '@/api/user'
 import { searchUser } from '@/api/remote-search'
 // import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
 import UE from '@/views/article/components/UE'
 
 const defaultForm = {
-  status: '草稿',
-  title: '', // 文章题目
-  content: '', // 文章内容
-  content_short: '', // 文章摘要
-  source_uri: '', // 文章外链
-  image_uri: '', // 文章图片
-  display_time: undefined, // 前台展示时间
-  id: undefined,
-  comment_disabled: 'false',
-  importance: 0,
-  category: 1,
-  recommend: false,
-  top: false
+  id: '@increment',
+  'sex|1': ['male', 'female'],
+  age: '@integer(10,100)',
+  sign: '@cword(5,20)',
+  headimg: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+  address: '@city(true)',
+  touxian: '@cword(5,6)',
+  user: {
+    id: '@increment',
+    username: '@cfirst' + '@clast',
+    is_staff: 0,
+    is_super: 0,
+    'status|1': [0, 1],
+    join_date: '',
+    last_login: '',
+    email: '@email',
+    phone: '@integer(10000000000,20000000000,11)'
+  }
 }
 
 export default {
-  name: 'ArticleDetail',
-  components: { UE, MDinput, Sticky },
+  name: 'AuthorDetail',
+  components: { UE, Sticky },
   // components: { Tinymce, MDinput, Sticky, Warning, CommentDropdown },
   props: {
     isEdit: {
@@ -295,14 +282,12 @@ export default {
       console.log('UE传来的值:', editor_article)
     },
     fetchData(id) {
-      fetchArticle(id).then(response => {
-        this.postForm = response.data
+      fetchAuthor(id).then(response => {
+        this.postForm = response.data.data
         // just for test
         setTimeout(() => {
-          this.$refs.ueditor.setDefault(this.postForm.content) // 给ue设置文章内容
+          this.$refs.ueditor.setDefault(this.postForm.sign) // 给ue设置文章内容
         }, 100)
-        this.postForm.title += `   我是标题:${this.postForm.id}`
-        this.postForm.content_short += `   我是简介:${this.postForm.id}`
         // set tagsview title
         this.setTagsViewTitle()
         // set page title
@@ -312,12 +297,12 @@ export default {
       })
     },
     setTagsViewTitle() {
-      const title = '编辑文章'
+      const title = '编辑作者'
       const route = Object.assign({}, this.tempRoute, { title: `${title}-${this.postForm.id}` })
       this.$store.dispatch('tagsView/updateVisitedView', route)
     },
     setPageTitle() {
-      const title = '编辑文章'
+      const title = '编辑作者'
       document.title = `${title} - ${this.postForm.id}`
     },
     submitForm() {
@@ -327,13 +312,12 @@ export default {
           this.loading = true
           this.$notify({
             title: '成功',
-            message: '发布文章成功',
+            message: '修改作者信息成功',
             type: 'success',
             duration: 2000
           })
-          this.postForm.status = '已发布'
           this.loading = false
-          this.$router.push('/article')
+          this.$router.push('/author')
         } else {
           console.log('error submit!!')
           return false

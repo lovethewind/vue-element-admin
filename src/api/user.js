@@ -8,7 +8,7 @@ export function login(data) {
   })
 }
 
-export function getInfo(token) {
+export function getUserInfo(token) {
   return request({
     url: '/admin/user/info',
     method: 'get',
@@ -16,6 +16,21 @@ export function getInfo(token) {
   })
 }
 
+export function getUserList(query) {
+  return request({
+    url: '/admin/user/list',
+    method: 'get',
+    params: { query }
+  })
+}
+
+export function fetchAuthor(id) {
+  return request({
+    url: '/admin/user/detail',
+    method: 'get',
+    params: { id }
+  })
+}
 export function logout() {
   return request({
     url: '/admin/user/logout',

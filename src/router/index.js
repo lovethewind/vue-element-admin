@@ -109,6 +109,61 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/article',
+    component: Layout,
+    redirect: '/article/list',
+    name: 'Article',
+    meta: {
+      title: '文章管理',
+      icon: 'el-icon-s-help'
+    },
+    children: [
+      {
+        path: 'create',
+        component: () => import('@/views/article/create'),
+        name: 'CreateArticle',
+        meta: { title: '新建文章', icon: 'edit' }
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/article/edit'),
+        name: 'EditArticle',
+        meta: { title: '编辑文章', noCache: true, activeMenu: '/article/list' },
+        hidden: true
+      },
+      {
+        path: 'list',
+        component: () => import('@/views/article/list'),
+        name: 'ArticleList',
+        meta: { title: '文章列表', icon: 'list' }
+      }
+    ]
+  },
+  {
+    path: '/author',
+    component: Layout,
+    redirect: '/author/list',
+    name: 'Author',
+    meta: {
+      title: '作者管理',
+      icon: 'el-icon-s-help'
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/author/list'),
+        name: 'AuthorList',
+        meta: { title: '作者管理', icon: 'people' }
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/author/edit'),
+        name: 'AuthorEdit',
+        meta: { title: '作者修改', icon: 'edit' }
+      }
+    ]
+  },
+  {
     path: '/profile',
     component: Layout,
     redirect: '/profile/index',
@@ -136,7 +191,7 @@ export const asyncRoutes = [
     alwaysShow: true, // will always show the root menu
     name: 'Permission',
     meta: {
-      title: '权限测试页',
+      title: '权限管理',
       icon: 'lock',
       roles: ['admin', 'editor'] // you can set roles in root nav
     },
@@ -190,50 +245,18 @@ export const asyncRoutes = [
   nestedRouter,
   tableRouter,
 
-  {
-    path: '/article',
-    component: Layout,
-    redirect: '/article/list',
-    name: 'Article',
-    meta: {
-      title: '文章管理',
-      icon: 'el-icon-s-help'
-    },
-    children: [
-      {
-        path: 'create',
-        component: () => import('@/views/article/create'),
-        name: 'CreateArticle',
-        meta: { title: '新建文章', icon: 'edit' }
-      },
-      {
-        path: 'edit/:id(\\d+)',
-        component: () => import('@/views/article/edit'),
-        name: 'EditArticle',
-        meta: { title: '编辑文章', noCache: true, activeMenu: '/article/list' },
-        hidden: true
-      },
-      {
-        path: 'list',
-        component: () => import('@/views/article/list'),
-        name: 'ArticleList',
-        meta: { title: '文章列表', icon: 'list' }
-      }
-    ]
-  },
-
-  {
-    path: '/tab',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/tab/index'),
-        name: 'Tab',
-        meta: { title: 'Tab', icon: 'tab' }
-      }
-    ]
-  },
+  // {
+  //   path: '/tab',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/tab/index'),
+  //       name: 'Tab',
+  //       meta: { title: 'Tab', icon: 'tab' }
+  //     }
+  //   ]
+  // },
 
   {
     path: '/error',
