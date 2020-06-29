@@ -1,6 +1,6 @@
 <template>
   <div v-if="list" class="app-container">
-    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].user.is_staff">
+    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].is_staff">
       <el-input v-model="search_content" placeholder="请输入用户名/邮箱/手机号" style="width: 200px;margin-right: 20px">搜索</el-input>
       <el-select v-model="search_sex" style="width: 120px;margin-right: 20px" placeholder="性别">
         <el-option label="男" value="1" />
@@ -35,96 +35,69 @@
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="头像" width="80">
-        <template slot-scope="scope">
-          <img :src="scope.row.headimg" style="width: 40px;height: 40px;cursor: pointer;border-radius: 5px">
-        </template>
-      </el-table-column>
 
-      <el-table-column label="用户名" width="120px">
+      <el-table-column label="用户名" width="100px">
         <template slot-scope="{row}">
-          <router-link :to="'/article/edit/'+row.id" class="link-type">
-            <span>{{ row.user.username }}</span>
+          <router-link :to="'/user/edit/'+row.id" class="link-type">
+            <span>{{ row.username }}</span>
           </router-link>
         </template>
       </el-table-column>
 
-      <el-table-column width="60px" align="center" label="性别">
+      <el-table-column align="center" width="120px" label="手机号">
         <template slot-scope="scope">
-          <span>{{ scope.row.sex === 'male'?'男':'女' }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="60px" align="center" label="年龄">
-        <template slot-scope="scope">
-          <span>{{ scope.row.age }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="120px" align="center" sortable label="地址">
-        <template slot-scope="{row}">
-          <span>{{ row.address }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" width="140px" label="头衔">
-        <template slot-scope="scope">
-          <span>{{ scope.row.touxian }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" width="180px" label="签名">
-        <template slot-scope="scope">
-          <span>{{ scope.row.sign.substring(0,10) }}...</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" width="180px" label="手机号">
-        <template slot-scope="scope">
-          <span>{{ scope.row.user.phone }}</span>
+          <span>{{ scope.row.phone }}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" width="180px" label="邮箱">
         <template slot-scope="scope">
-          <span>{{ scope.row.user.email }}</span>
+          <span>{{ scope.row.email }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="100px" align="center" label="网站管理员">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.is_staff?'success':'info'">
+            {{ scope.row.is_staff === 1 ?'是':'否' }}
+          </el-tag>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="100px" align="center" label="系统管理员">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.is_staff?'success':'info'">
+            {{ scope.row.is_staff === 1 ?'是':'否' }}
+          </el-tag>
         </template>
       </el-table-column>
 
       <el-table-column width="160px" prop="last_login" sortable align="center" label="上次登录时间">
         <template slot-scope="scope">
-          <span>{{ scope.row.user.last_login | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ scope.row.last_login | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
 
       <el-table-column width="160px" prop="last_login" sortable align="center" label="注册时间">
         <template slot-scope="scope">
-          <span>{{ scope.row.user.join_date | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="120px" align="center" prop="is_staff" sortable label="是否管理员">
-        <template slot-scope="{row}">
-          <el-tag :type="row.user.is_staff?'success':'info'">
-            {{ row.user.is_staff?'是':'否' }}
-          </el-tag>
+          <span>{{ scope.row.join_date | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
 
       <el-table-column width="120px" align="center" prop="is_staff" sortable label="状态">
         <template slot-scope="{row}">
-          <el-tag :type="row.user.status?'success':'info'">
-            {{ row.user.status?'可用':'禁用' }}
+          <el-tag :type="row.status?'success':'info'">
+            {{ row.status?'正常':'禁止登录' }}
           </el-tag>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="操作" width="120" fixed="right">
         <template slot-scope="scope">
-          <router-link :to="'/author/edit/'+scope.row.id" title="编辑">
+          <router-link :to="'/user/edit/'+scope.row.id" title="编辑">
             <el-button type="primary" size="small" icon="el-icon-edit" />
           </router-link>
-          <router-link :to="'/author/edit/'+scope.row.id" title="删除">
+          <router-link :to="'/user/edit/'+scope.row.id" title="删除">
             <el-button type="danger" size="small" icon="el-icon-delete" />
           </router-link>
         </template>
@@ -138,10 +111,10 @@
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Sticky from '@/components/Sticky' // 粘性header组件
-import { getAuthorList } from '@/api/author'
+import { getUserList } from '@/api/user'
 
 export default {
-  name: 'AuthorList',
+  name: 'UserList',
   components: { Pagination, Sticky },
   filters: {
     statusFilter(status) {
@@ -201,7 +174,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      getAuthorList(this.listQuery).then(response => {
+      getUserList(this.listQuery).then(response => {
         console.log(response.data.items)
         this.list = response.data.items
         this.total = response.data.total

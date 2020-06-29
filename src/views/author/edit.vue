@@ -1,12 +1,12 @@
 <template>
-  <author-detail :is-edit="false" />
+  <author-detail :is-edit="true" />
 </template>
 
 <script>
 import AuthorDetail from './components/AuthorDetail'
 
 export default {
-  name: 'CreateArticle',
+  name: 'AuthorEdit',
   components: { AuthorDetail }
 }
 </script>

@@ -82,11 +82,6 @@
           </el-col>
         </el-row>
 
-        <!--        <el-form-item style="margin-bottom: 40px;" label="简要描述:">-->
-        <!--          <el-input v-model="postForm.content_short" :rows="1" type="textarea" class="article-textarea" autosize placeholder="输入简要描述" />-->
-        <!--          <br><span v-show="contentShortLength" class="word-counter">已输入{{ contentShortLength }}个字符</span>-->
-        <!--        </el-form-item>-->
-
         <el-form-item prop="content" label="签名:" style="margin-bottom: 30px;">
           <UE id="ueditor" ref="ueditor" update_content="editor_article" @editor_article="editor_article" />
         </el-form-item>
@@ -100,29 +95,27 @@
 // import Upload from '@/components/Upload/SingleImage3'
 import Sticky from '@/components/Sticky' // 粘性header组件
 import { validURL } from '@/utils/validate'
-import { fetchAuthor } from '@/api/user'
+import { fetchAuthor } from '@/api/author'
 import { searchUser } from '@/api/remote-search'
 // import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
 import UE from '@/views/article/components/UE'
 
 const defaultForm = {
-  id: '@increment',
-  'sex|1': ['male', 'female'],
-  age: '@integer(10,100)',
-  sign: '@cword(5,20)',
+  id: '',
+  sex: '',
+  age: '',
+  sign: '',
   headimg: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
-  address: '@city(true)',
-  touxian: '@cword(5,6)',
+  address: '',
+  touxian: '',
   user: {
-    id: '@increment',
-    username: '@cfirst' + '@clast',
-    is_staff: 0,
-    is_super: 0,
-    'status|1': [0, 1],
+    id: '',
+    username: '',
+    status: '',
     join_date: '',
     last_login: '',
-    email: '@email',
-    phone: '@integer(10000000000,20000000000,11)'
+    email: '',
+    phone: ''
   }
 }
 
@@ -283,7 +276,7 @@ export default {
     },
     fetchData(id) {
       fetchAuthor(id).then(response => {
-        this.postForm = response.data.data
+        this.postForm = response.data
         // just for test
         setTimeout(() => {
           this.$refs.ueditor.setDefault(this.postForm.sign) // 给ue设置文章内容

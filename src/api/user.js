@@ -24,7 +24,7 @@ export function getUserList(query) {
   })
 }
 
-export function fetchAuthor(id) {
+export function fetchUser(id) {
   return request({
     url: '/admin/user/detail',
     method: 'get',

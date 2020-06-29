@@ -121,13 +121,13 @@ export const constantRoutes = [
       {
         path: 'create',
         component: () => import('@/views/article/create'),
-        name: 'CreateArticle',
+        name: 'ArticleCreate',
         meta: { title: '新建文章', icon: 'edit' }
       },
       {
         path: 'edit/:id(\\d+)',
         component: () => import('@/views/article/edit'),
-        name: 'EditArticle',
+        name: 'ArticleEdit',
         meta: { title: '编辑文章', noCache: true, activeMenu: '/article/list' },
         hidden: true
       },
@@ -153,13 +153,45 @@ export const constantRoutes = [
         path: 'list',
         component: () => import('@/views/author/list'),
         name: 'AuthorList',
-        meta: { title: '作者管理', icon: 'people' }
+        meta: { title: '作者列表', icon: 'people' }
       },
       {
         path: 'edit/:id(\\d+)',
         component: () => import('@/views/author/edit'),
         name: 'AuthorEdit',
-        meta: { title: '作者修改', icon: 'edit' }
+        meta: { title: '作者修改', noCache: true, activeMenu: '/author/list' },
+        hidden: true
+      }
+    ]
+  },
+  {
+    path: '/user',
+    component: Layout,
+    redirect: '/user/list',
+    name: 'User',
+    meta: {
+      title: '用户管理',
+      icon: 'user'
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/user/list'),
+        name: 'UserList',
+        meta: { title: '用户列表', icon: 'peoples' }
+      },
+      {
+        path: 'create',
+        component: () => import('@/views/user/create'),
+        name: 'UserCreate',
+        meta: { title: '新建用户', icon: 'edit' }
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/user/edit'),
+        name: 'UserEdit',
+        meta: { title: '用户修改', icon: 'edit' },
+        hidden: true
       }
     ]
   },
