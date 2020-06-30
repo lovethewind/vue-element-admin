@@ -333,7 +333,8 @@ export default {
           })
           this.postForm.status = '已发布'
           this.loading = false
-          this.$router.push('/article')
+          this.$store.dispatch('tagsView/delView', this.$route)
+          this.$router.go(-1)
         } else {
           console.log('error submit!!')
           return false
@@ -355,7 +356,8 @@ export default {
         duration: 1000
       })
       this.postForm.status = '草稿'
-      this.$router.push('/article')
+      this.$store.dispatch('tagsView/delView', this.$route)
+      this.$router.go(-1)
     },
     getRemoteUserList(query) {
       searchUser(query).then(response => {

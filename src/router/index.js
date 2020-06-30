@@ -119,12 +119,6 @@ export const constantRoutes = [
     },
     children: [
       {
-        path: 'create',
-        component: () => import('@/views/article/create'),
-        name: 'ArticleCreate',
-        meta: { title: '新建文章', icon: 'edit' }
-      },
-      {
         path: 'edit/:id(\\d+)',
         component: () => import('@/views/article/edit'),
         name: 'ArticleEdit',
@@ -136,6 +130,12 @@ export const constantRoutes = [
         component: () => import('@/views/article/list'),
         name: 'ArticleList',
         meta: { title: '文章列表', icon: 'list' }
+      },
+      {
+        path: 'create',
+        component: () => import('@/views/article/create'),
+        name: 'ArticleCreate',
+        meta: { title: '新建文章', icon: 'edit' }
       }
     ]
   },
@@ -191,6 +191,37 @@ export const constantRoutes = [
         component: () => import('@/views/user/edit'),
         name: 'UserEdit',
         meta: { title: '用户修改', icon: 'edit' },
+        hidden: true
+      }
+    ]
+  },
+  {
+    path: '/verification-code',
+    component: Layout,
+    redirect: '/verification-code/list',
+    name: 'VerificationCode',
+    meta: {
+      title: '验证码管理',
+      icon: 'user'
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/verification-code/list'),
+        name: 'VerificationCodeList',
+        meta: { title: '验证码列表', icon: 'peoples' }
+      },
+      {
+        path: 'create',
+        component: () => import('@/views/verification-code/create'),
+        name: 'VerificationCodeCreate',
+        meta: { title: '新建验证码', icon: 'edit' }
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/verification-code/edit'),
+        name: 'VerificationCodeEdit',
+        meta: { title: '验证码修改', icon: 'edit' },
         hidden: true
       }
     ]

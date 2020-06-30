@@ -8,9 +8,9 @@ for (let i = 0; i < count; i++) {
     id: '@increment',
     username: '@cfirst' + '@clast',
     password: '******',
-    'is_staff|1': [0, 1],
-    'is_super|1': [0, 1],
-    'status|1': [0, 1],
+    'is_staff|1': ['true', 'false'],
+    'is_super|1': ['true', 'false'],
+    'status|1': ['0', '1'],
     join_date: +Mock.Random.date('T'),
     last_login: +Mock.Random.date('T'),
     email: '@email',
@@ -131,18 +131,13 @@ module.exports = [
   },
   // user detail
   {
-    url: 'admin/user/detail',
+    url: '/admin/user/detail',
     type: 'get',
     response: config => {
       const { id } = config.query
+      console.log('用户传过来的id', id)
       for (const user of List) {
         if (user.id === +id) {
-          return {
-            code: 20000,
-            data: user
-          }
-        } else {
-          console.log('what????')
           return {
             code: 20000,
             data: user

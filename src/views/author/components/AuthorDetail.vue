@@ -43,8 +43,8 @@
 
                 <el-col :span="8">
                   <el-form-item label="性别:" class="postInfo-container-item">
-                    <el-radio v-model="postForm.sex" label="false">男</el-radio>
-                    <el-radio v-model="postForm.sex" label="true">女</el-radio>
+                    <el-radio v-model="postForm.sex" label="male">男</el-radio>
+                    <el-radio v-model="postForm.sex" label="female">女</el-radio>
                     <el-radio v-model="postForm.sex" label="security">保密</el-radio>
                   </el-form-item>
                 </el-col>
@@ -242,21 +242,7 @@ export default {
     }
   },
   computed: {
-    contentShortLength() {
-      return this.postForm.content_short.length
-    },
-    displayTime: {
-      // set and get is useful when the data
-      // returned by the back end api is different from the front end
-      // back end return => "2013-06-25 06:59:25"
-      // front end need timestamp => 1372114765000
-      get() {
-        return (+new Date(this.postForm.display_time))
-      },
-      set(val) {
-        this.postForm.display_time = new Date(val)
-      }
-    }
+
   },
   created() {
     if (this.isEdit) {
@@ -310,7 +296,8 @@ export default {
             duration: 2000
           })
           this.loading = false
-          this.$router.push('/author')
+          this.$store.dispatch('tagsView/delView', this.$route)
+          this.$router.go(-1)
         } else {
           console.log('error submit!!')
           return false
@@ -318,21 +305,8 @@ export default {
       })
     },
     draftForm() {
-      if (this.postForm.content.length === 0 || this.postForm.title.length === 0) {
-        this.$message({
-          message: '请填写必要的标题和内容',
-          type: 'warning'
-        })
-        return
-      }
-      this.$message({
-        message: '保存成功',
-        type: 'success',
-        showClose: true,
-        duration: 1000
-      })
-      this.postForm.status = '草稿'
-      this.$router.push('/article')
+      this.$store.dispatch('tagsView/delView', this.$route)
+      this.$router.go(-1)
     },
     getRemoteUserList(query) {
       searchUser(query).then(response => {

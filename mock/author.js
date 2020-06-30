@@ -6,7 +6,7 @@ const count = 100
 for (let i = 0; i < count; i++) {
   List.push(Mock.mock({
     id: '@increment',
-    'sex|1': ['male', 'female'],
+    'sex|1': ['male', 'female', 'security'],
     age: '@integer(10,100)',
     sign: '@cword(5,20)',
     headimg: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
@@ -61,7 +61,7 @@ module.exports = [
   },
   // user detail
   {
-    url: 'admin/author/detail',
+    url: '/admin/author/detail',
     type: 'get',
     response: config => {
       const { id } = config.query

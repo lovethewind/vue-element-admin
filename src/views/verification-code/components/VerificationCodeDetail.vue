@@ -20,7 +20,7 @@
       <div class="createPost-main-container">
         <el-row>
           <el-col :span="16">
-            <el-form-item label="用户名:" style="margin-bottom: 20px;">
+            <el-form-item label="验证码名:" style="margin-bottom: 20px;">
               <el-input v-model="postForm.username" style="width: 220px" />
             </el-form-item>
           </el-col>
@@ -56,7 +56,7 @@
             </el-row>
             <el-row style="margin-bottom: 20px;">
               <el-col :span="16">
-                <el-form-item label="用户状态:" class="postInfo-container-item">
+                <el-form-item label="验证码状态:" class="postInfo-container-item">
                   <el-radio v-model="postForm.status" label="1">正常</el-radio>
                   <el-radio v-model="postForm.status" label="0">禁止登录</el-radio>
                 </el-form-item>
@@ -111,15 +111,8 @@
 </template>
 
 <script>
-// import Tinymce from '@/components/Tinymce'
-// import Upload from '@/components/Upload/SingleImage3'
 import Sticky from '@/components/Sticky' // 粘性header组件
-// eslint-disable-next-line no-unused-vars
-import { validURL } from '@/utils/validate'
-import { fetchUser } from '@/api/user'
-// eslint-disable-next-line no-unused-vars
-import { searchUser } from '@/api/remote-search'
-// import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
+import { fetchVerificationCode } from '@/api/verification-code'
 import UE from '@/views/article/components/UE'
 
 const defaultForm = {
@@ -138,10 +131,9 @@ const defaultForm = {
 }
 
 export default {
-  name: 'UserDetail',
+  name: 'VerificationCodeDetail',
   // eslint-disable-next-line vue/no-unused-components
   components: { UE, Sticky },
-  // components: { Tinymce, MDinput, Sticky, Warning, CommentDropdown },
   props: {
     isEdit: {
       type: Boolean,
@@ -186,7 +178,7 @@ export default {
   },
   methods: {
     fetchData(id) {
-      fetchUser(id).then(response => {
+      fetchVerificationCode(id).then(response => {
         console.log(response.data)
         this.postForm = response.data
         // set tagsview title
@@ -198,12 +190,12 @@ export default {
       })
     },
     setTagsViewTitle() {
-      const title = '编辑用户'
+      const title = '编辑验证码'
       const route = Object.assign({}, this.tempRoute, { title: `${title}-${this.postForm.id}` })
       this.$store.dispatch('tagsView/updateVisitedView', route)
     },
     setPageTitle() {
-      const title = '编辑用户'
+      const title = '编辑验证码'
       document.title = `${title} - ${this.postForm.id}`
     },
     submitForm() {
@@ -213,7 +205,7 @@ export default {
           this.loading = true
           this.$notify({
             title: '成功',
-            message: '修改用户信息成功',
+            message: '修改验证码信息成功',
             type: 'success',
             duration: 2000
           })

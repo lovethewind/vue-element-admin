@@ -1,11 +1,15 @@
 <template>
   <div v-if="list" class="app-container">
-    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].is_staff">
+    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].is_staff" style="text-align: left;height: 100px;">
       <el-input v-model="search_content" placeholder="请输入用户名/邮箱/手机号" style="width: 200px;margin-right: 20px">搜索</el-input>
       <el-select v-model="search_sex" style="width: 120px;margin-right: 20px" placeholder="性别">
         <el-option label="男" value="1" />
         <el-option label="女" value="0" />
         <el-option label="保密" value="3" />
+      </el-select>
+      <el-select v-model="search_date_type" style="width: 120px;margin-right: 20px" placeholder="时间类型">
+        <el-option label="登录时间" value="login" />
+        <el-option label="注册时间" value="register" />
       </el-select>
       <el-date-picker
         v-model="search_date"
@@ -58,16 +62,16 @@
 
       <el-table-column width="100px" align="center" label="网站管理员">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.is_staff?'success':'info'">
-            {{ scope.row.is_staff === 1 ?'是':'否' }}
+          <el-tag :type="scope.row.is_staff==='true'?'success':'info'">
+            {{ scope.row.is_staff === 'true' ?'是':'否' }}
           </el-tag>
         </template>
       </el-table-column>
 
       <el-table-column width="100px" align="center" label="系统管理员">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.is_staff?'success':'info'">
-            {{ scope.row.is_staff === 1 ?'是':'否' }}
+          <el-tag :type="scope.row.is_staff==='true'?'success':'info'">
+            {{ scope.row.is_staff === 'true' ?'是':'否' }}
           </el-tag>
         </template>
       </el-table-column>
@@ -86,8 +90,8 @@
 
       <el-table-column width="120px" align="center" prop="is_staff" sortable label="状态">
         <template slot-scope="{row}">
-          <el-tag :type="row.status?'success':'info'">
-            {{ row.status?'正常':'禁止登录' }}
+          <el-tag :type="row.status==='1'?'success':'info'">
+            {{ row.status==='1'?'正常':'禁止登录' }}
           </el-tag>
         </template>
       </el-table-column>
@@ -138,6 +142,7 @@ export default {
       search_content: '',
       search_date: '',
       search_sex: '',
+      search_date_type: '',
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',
@@ -217,5 +222,6 @@ export default {
   transition: 600ms ease position;
   background: -webkit-gradient(linear, left top, right top, from(#20b6f9), color-stop(0%, #20b6f9), color-stop(100%, #2178f1), to(#2178f1));
   background: linear-gradient(90deg, #20b6f9 0%, #20b6f9 0%, #2178f1 100%, #2178f1 100%);
+  background: powderblue;
 }
 </style>

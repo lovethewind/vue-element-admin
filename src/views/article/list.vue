@@ -1,6 +1,6 @@
 <template>
   <div v-if="list" class="app-container">
-    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].status" style="text-align: left;height: 100px;background: rgba(0,0,0,0.08)">
+    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].id" style="text-align: left;height: 100px;">
       <el-input v-model="search_content" placeholder="请输入标题/作者/内容搜索" style="width: 250px;margin-right: 20px">搜索</el-input>
       <el-date-picker
         v-model="search_date"
@@ -22,9 +22,9 @@
       </el-select>
       <el-button type="success" icon="el-icon-search" style="margin-right: 30px">搜索</el-button>
       <p style="text-align: left">
-        <el-button type="success" icon="fa fa-chevron-up" style="margin-left: 63px"> 全部置顶</el-button>
-        <el-button type="success" icon="fa fa-chevron-up" style="margin-left: 30px"> 全部推荐</el-button>
-        <el-button type="danger" icon="el-icon-delete" style="margin-left: 30px">全部删除</el-button>
+        <el-button type="success" icon="fa fa-chevron-up" style="margin-left: 63px"> 批量置顶</el-button>
+        <el-button type="success" icon="fa fa-chevron-up" style="margin-left: 30px"> 批量推荐</el-button>
+        <el-button type="danger" icon="el-icon-delete" style="margin-left: 30px">批量删除</el-button>
       </p>
     </sticky>
     <el-divider />
@@ -221,7 +221,8 @@ export default {
   padding-right: 20px;
   -webkit-transition: 600ms ease position;
   transition: 600ms ease position;
-  background: -webkit-gradient(linear, left top, right top, from(#20b6f9), color-stop(0%, #20b6f9), color-stop(100%, #2178f1), to(#2178f1));
-  background: linear-gradient(90deg, #20b6f9 0%, #20b6f9 0%, #2178f1 100%, #2178f1 100%);
+  /*background: -webkit-gradient(linear, left top, right top, from(#20b6f9), color-stop(0%, #20b6f9), color-stop(100%, #2178f1), to(#2178f1));*/
+  /*background: linear-gradient(90deg, #20b6f9 0%, #20b6f9 0%, #2178f1 100%, #2178f1 100%);*/
+  background: powderblue;
 }
 </style>

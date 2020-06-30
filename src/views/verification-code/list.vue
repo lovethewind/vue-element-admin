@@ -1,15 +1,15 @@
 <template>
   <div v-if="list" class="app-container">
-    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].user.is_staff">
+    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].method" style="text-align: left;height: 100px;">
       <el-input v-model="search_content" placeholder="请输入用户名/邮箱/手机号" style="width: 200px;margin-right: 20px">搜索</el-input>
-      <el-select v-model="search_sex" style="width: 120px;margin-right: 20px" placeholder="性别">
-        <el-option label="男" value="male" />
-        <el-option label="女" value="famale" />
-        <el-option label="保密" value="security" />
+      <el-select v-model="search_type" style="width: 120px;margin-right: 20px" placeholder="性别">
+        <el-option label="注册" value="register" />
+        <el-option label="找回密码" value="find-password" />
+        <el-option label="更换绑定" value="change-blind" />
       </el-select>
-      <el-select v-model="search_date_type" style="width: 120px;margin-right: 20px" placeholder="时间类型">
-        <el-option label="登录时间" value="login" />
-        <el-option label="注册时间" value="register" />
+      <el-select v-model="search_method" style="width: 120px;margin-right: 20px" placeholder="验证方式">
+        <el-option label="手机号" value="phone" />
+        <el-option label="邮箱" value="email" />
       </el-select>
       <el-date-picker
         v-model="search_date"
@@ -25,7 +25,7 @@
       <el-button type="danger" icon="el-icon-delete">批量删除</el-button>
     </sticky>
     <el-divider />
-    <el-table v-loading="listLoading" :data="list" :default-sort="{prop: 'user.last_login', order: 'descending'}" border fit highlight-current-row style="width: 100%">
+    <el-table v-loading="listLoading" :data="list" :default-sort="{prop: 'time', order: 'descending'}" border fit highlight-current-row style="width: 100%">
       <el-table-column
         type="selection"
         width="40"
@@ -33,87 +33,44 @@
         fixed
         @selection-change="handleSelectionChange"
       />
-
       <el-table-column align="center" label="ID" width="60">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="用户名" width="100px">
-        <template slot-scope="{row}">
-          <router-link :to="'/article/edit/'+row.id" class="link-type">
-            <span>{{ row.user.username }}</span>
-          </router-link>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="头像" width="80">
+      <el-table-column align="center" width="120px" label="验证码">
         <template slot-scope="scope">
-          <img :src="scope.row.headimg" style="width: 40px;height: 40px;cursor: pointer;border-radius: 5px" alt="">
+          <span>{{ scope.row.code }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="60px" align="center" label="性别">
+      <el-table-column align="center" width="180px" label="验证类型">
         <template slot-scope="scope">
-          <span>{{ scope.row.sex === 'male'?'男':scope.row.sex === 'female'?'女':'保密' }}</span>
+          <span>{{ scope.row.type }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="60px" align="center" label="年龄">
+      <el-table-column width="100px" align="center" label="验证方式">
         <template slot-scope="scope">
-          <span>{{ scope.row.age }}</span>
+          <el-tag :type="scope.row.method==='phone'?'success':'info'">
+            {{ scope.row.method === 'phone' ?'手机':'邮箱' }}
+          </el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column width="160px" align="center" sortable label="地址">
-        <template slot-scope="{row}">
-          <span>{{ row.address }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" width="140px" label="头衔">
+      <el-table-column width="160px" prop="time" sortable align="center" label="发送时间">
         <template slot-scope="scope">
-          <span>{{ scope.row.touxian }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" width="180px" label="签名">
-        <template slot-scope="scope">
-          <span>{{ scope.row.sign.substring(0,10) }}...</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" width="160px" label="手机号">
-        <template slot-scope="scope">
-          <span>{{ scope.row.user.phone }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" width="180px" label="邮箱">
-        <template slot-scope="scope">
-          <span>{{ scope.row.user.email }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="160px" prop="user.last_login" sortable align="center" label="上次登录时间">
-        <template slot-scope="scope">
-          <span>{{ scope.row.user.last_login | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="160px" prop="user.join_date" sortable align="center" label="注册时间">
-        <template slot-scope="scope">
-          <span>{{ scope.row.user.join_date | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <span>{{ scope.row.time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="操作" width="120" fixed="right">
         <template slot-scope="scope">
-          <router-link :to="'/author/edit/'+scope.row.id" title="编辑">
+          <router-link :to="'/verification-code/edit/'+scope.row.id" title="编辑">
             <el-button type="primary" size="small" icon="el-icon-edit" />
           </router-link>
-          <router-link :to="'/author/edit/'+scope.row.id" title="删除">
+          <router-link :to="'/verification-code/edit/'+scope.row.id" title="删除">
             <el-button type="danger" size="small" icon="el-icon-delete" />
           </router-link>
         </template>
@@ -127,10 +84,10 @@
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Sticky from '@/components/Sticky' // 粘性header组件
-import { getAuthorList } from '@/api/author'
+import { getVerificationCodeList } from '@/api/verification-code'
 
 export default {
-  name: 'AuthorList',
+  name: 'VerificationCodeList',
   components: { Pagination, Sticky },
   filters: {
     statusFilter(status) {
@@ -153,8 +110,8 @@ export default {
       },
       search_content: '',
       search_date: '',
-      search_sex: '',
-      search_date_type: '',
+      search_method: '',
+      search_type: '',
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',
@@ -191,7 +148,8 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      getAuthorList(this.listQuery).then(response => {
+      console.log('用户传过来的id')
+      getVerificationCodeList(this.listQuery).then(response => {
         console.log(response.data.items)
         this.list = response.data.items
         this.total = response.data.total
