@@ -8,7 +8,7 @@
       label-width="100px"
       @submit.native.prevent
     >
-      <sticky :z-index="10" :class-name="'sub-navbar '+postForm.status">
+      <sticky :z-index="10" :class-name="'sub-navbar '+postForm.code">
         <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">
           提交
         </el-button>
@@ -18,90 +18,44 @@
       </sticky>
 
       <div class="createPost-main-container">
-        <el-row>
+        <el-row style="margin-bottom: 20px;">
           <el-col :span="16">
-            <el-form-item label="验证码名:" style="margin-bottom: 20px;">
-              <el-input v-model="postForm.username" style="width: 220px" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item style="margin-bottom: 20px;">
-              <span style="color: red;font-size: 16px;font-weight: bold">{{ isEdit?'修改密码':'设置初始密码' }}</span>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <div class="postInfo-container">
-            <el-row style="margin-bottom: 20px;">
-              <el-col :span="8">
-                <el-form-item label="网站管理员:" class="postInfo-container-item">
-                  <el-radio v-model="postForm.is_staff" label="true">是</el-radio>
-                  <el-radio v-model="postForm.is_staff" label="false">否</el-radio>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="超级管理员:" class="postInfo-container-item">
-                  <el-radio v-model="postForm.is_super" label="true">是</el-radio>
-                  <el-radio v-model="postForm.is_super" label="false">否</el-radio>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item v-if="isEdit" label="新密码:" style="margin-bottom: 20px;">
-                  <el-input v-model="postForm.new_password" style="width: 220px" />
-                </el-form-item>
-                <el-form-item v-else label="初始密码:" style="margin-bottom: 20px;">
-                  <el-input v-model="postForm.password" style="width: 220px" />
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row style="margin-bottom: 20px;">
-              <el-col :span="16">
-                <el-form-item label="验证码状态:" class="postInfo-container-item">
-                  <el-radio v-model="postForm.status" label="1">正常</el-radio>
-                  <el-radio v-model="postForm.status" label="0">禁止登录</el-radio>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item v-if="isEdit" label="确认新密码:" style="margin-bottom: 20px;">
-                  <el-input v-model="postForm.rnew_password" style="width: 220px" />
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </div>
-        </el-row>
-
-        <el-row style="margin-bottom: 20px;">
-          <el-col :span="8">
-            <el-form-item label="注册时间" class="postInfo-container-item">
-              <el-date-picker
-                v-model="postForm.join_date"
-                type="datetime"
-                align="left"
-                style="margin-right: 20px"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="上次登录时间:" class="postInfo-container-item">
-              <el-date-picker
-                v-model="postForm.last_login"
-                type="datetime"
-                align="left"
-                style="margin-right: 20px"
-              />
+            <el-form-item label="验证码:" style="margin-bottom: 20px;">
+              <el-input v-model="postForm.code" style="width: 220px" />
             </el-form-item>
           </el-col>
         </el-row>
 
         <el-row style="margin-bottom: 20px;">
           <el-col :span="8">
-            <el-form-item label="邮箱:" class="postInfo-container-item">
-              <el-input v-model="postForm.email" style="width: 220px;" />
+            <el-form-item label="验证方式:" class="postInfo-container-item">
+              <el-radio v-model="postForm.method" label="phone">手机号</el-radio>
+              <el-radio v-model="postForm.method" label="email">邮箱</el-radio>
             </el-form-item>
           </el-col>
+          <el-col :span="24">
+            <el-form-item label="验证号码:" class="postInfo-container-item">
+              <el-input v-model="postForm.info" style="width: 220px" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="验证类型:" class="postInfo-container-item">
+              <el-radio v-model="postForm.type" label="register">注册</el-radio>
+              <el-radio v-model="postForm.type" label="find-password">找回密码</el-radio>
+              <el-radio v-model="postForm.type" label="change-blind">更换绑定</el-radio>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row style="margin-bottom: 20px;">
           <el-col :span="8">
-            <el-form-item label="手机号:" class="postInfo-container-item">
-              <el-input v-model="postForm.phone" style="width: 220px;" />
+            <el-form-item label="发送时间:" class="postInfo-container-item">
+              <el-date-picker
+                v-model="postForm.time"
+                type="datetime"
+                align="left"
+                style="margin-right: 20px"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -117,17 +71,11 @@ import UE from '@/views/article/components/UE'
 
 const defaultForm = {
   id: '',
-  username: '',
-  password: '123456',
-  is_staff: 'false',
-  is_super: 'false',
-  status: '1',
-  join_date: '',
-  last_login: '',
-  email: '',
-  phone: '',
-  new_password: '',
-  rnew_password: ''
+  code: '',
+  type: '',
+  method: '',
+  info: '',
+  time: ''
 }
 
 export default {
@@ -210,7 +158,8 @@ export default {
             duration: 2000
           })
           this.loading = false
-          this.$router.push('/user')
+          this.$store.dispatch('tagsView/delView', this.$route)
+          this.$router.push('/verification-code')
         } else {
           console.log('error submit!!')
           return false

@@ -6,18 +6,21 @@ const count = 100
 for (let i = 0; i < count; i++) {
   List.push(Mock.mock({
     id: '@increment',
-    code: '@integer(100000,900000,6)',
-    'type|1': ['register', 'find-password', 'change-blind'],
-    'method|1': ['phone', 'email'],
-    'info|1': ['@email', '@integer(10000000000,20000000000,11)'],
-    time: +Mock.Random.date('T')
+    name: '@cword(4,6)',
+    parent_id: {
+      id: '@increment',
+      name: '@cword(4,6)',
+      'status|1': ['true', 'false']
+    },
+    jianjie: '@csentence',
+    'status|1': ['true', 'false']
   }))
 }
 
 module.exports = [
-  // verification-code list
+  // category list
   {
-    url: '/admin/verification-code/list',
+    url: '/admin/category/list',
     type: 'get',
     response: config => {
       const { phone, email, page = 1, limit = 10, sort } = config.query
@@ -43,18 +46,17 @@ module.exports = [
       }
     }
   },
-  // verification-code detail
+  // category detail
   {
-    url: '/admin/verification-code/detail',
+    url: '/admin/category/detail',
     type: 'get',
     response: config => {
       const { id } = config.query
-      console.log('用户传过来的id', id)
-      for (const verificationCode of List) {
-        if (verificationCode.id === +id) {
+      for (const category of List) {
+        if (category.id === +id) {
           return {
             code: 20000,
-            data: verificationCode
+            data: category
           }
         }
       }

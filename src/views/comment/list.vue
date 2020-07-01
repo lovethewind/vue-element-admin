@@ -1,16 +1,7 @@
 <template>
   <div v-if="list" class="app-container">
-    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].method" style="text-align: left;height: 100px;">
-      <el-input v-model="search_content" placeholder="请输入用户名/邮箱/手机号" style="width: 200px;margin-right: 20px">搜索</el-input>
-      <el-select v-model="search_type" style="width: 120px;margin-right: 20px" placeholder="性别">
-        <el-option label="注册" value="register" />
-        <el-option label="找回密码" value="find-password" />
-        <el-option label="更换绑定" value="change-blind" />
-      </el-select>
-      <el-select v-model="search_method" style="width: 120px;margin-right: 20px" placeholder="验证方式">
-        <el-option label="手机号" value="phone" />
-        <el-option label="邮箱" value="email" />
-      </el-select>
+    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].id" style="text-align: left;height: 100px;">
+      <el-input v-model="search_content" placeholder="请输入标题/作者/内容搜索" style="width: 250px;margin-right: 20px">搜索</el-input>
       <el-date-picker
         v-model="search_date"
         type="datetimerange"
@@ -18,67 +9,90 @@
         range-separator="至"
         start-placeholder="开始日期"
         end-placeholder="结束日期"
-        align="left"
+        align="right"
         style="margin-right: 20px"
       />
-      <el-button type="success" icon="el-icon-search" style="margin-right: 10px">搜索</el-button>
-      <el-button type="danger" icon="el-icon-delete">批量删除</el-button>
+      <el-select v-model="search_top" style="width: 120px;margin-right: 20px" placeholder="是否置顶">
+        <el-option label="已置顶" value="1" />
+        <el-option label="未置顶" value="0" />
+      </el-select>
+      <el-select v-model="search_recommend" style="width: 120px;margin-right: 20px" placeholder="是否推荐">
+        <el-option label="已推荐" value="1" />
+        <el-option label="未推荐" value="0" />
+      </el-select>
+      <el-button type="success" icon="el-icon-search" style="margin-right: 30px">搜索</el-button>
+      <p style="text-align: left">
+        <el-button type="success" icon="fa fa-chevron-up" style="margin-left: 63px"> 批量置顶</el-button>
+        <el-button type="danger" icon="el-icon-delete" style="margin-left: 30px">批量删除</el-button>
+      </p>
     </sticky>
     <el-divider />
     <el-table v-loading="listLoading" :data="list" :default-sort="{prop: 'time', order: 'descending'}" border fit highlight-current-row style="width: 100%">
       <el-table-column
         type="selection"
         width="40"
-        style="text-align: center"
         fixed
+        style="text-align: center"
         @selection-change="handleSelectionChange"
       />
-      <el-table-column align="center" label="ID" prpo="id" sortable width="80">
+      <el-table-column align="center" label="ID" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" width="120px" label="验证码">
+      <el-table-column width="120px" align="center" label="作者">
         <template slot-scope="scope">
-          <span>{{ scope.row.code }}</span>
+          <span>{{ scope.row.author.user.username }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" width="180px" label="验证类型">
+      <el-table-column width="200px" height="100px" label="内容">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.type === 'register'?'success': scope.row.type === 'find-password'?'warning':'info'">
-            <span>{{ scope.row.type === 'register'?'注册': scope.row.type === 'find-password'?'找回密码':'更换绑定' }}</span>
+          <span v-html="scope.row.content" />
+        </template>
+      </el-table-column>
+
+      <el-table-column width="200px" align="center" label="文章">
+        <template slot-scope="scope">
+          <router-link :to="'/article/edit/'+scope.row.article.id" class="link-type">
+            <span>{{ scope.row.article.title }}</span>
+          </router-link>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="200px" height="100px" label="回复主评论">
+        <template slot-scope="scope">
+          <span v-html="scope.row.parent_id.content" />
+        </template>
+      </el-table-column>
+
+      <el-table-column width="200px" height="100px" label="回复子评论">
+        <template slot-scope="scope">
+          <span v-html="scope.row.reply_id.content" />
+        </template>
+      </el-table-column>
+
+      <el-table-column width="180px" prop="time" sortable align="center" label="回复时间">
+        <template slot-scope="scope">
+          <span>{{ scope.row.time }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column class-name="status-col" label="状态" prop="status" sortable width="90">
+        <template slot-scope="{row}">
+          <el-tag :type="row.status | statusFilter">
+            {{ row.status === 'checked'?'已审核':row.status === '-'?'需审核':'已删除' }}
           </el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="验证账号">
-        <template slot-scope="scope">
-          <span>{{ scope.row.info }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="100px" align="center" label="验证方式">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.method==='phone'?'success':'info'">
-            {{ scope.row.method === 'phone' ?'手机':'邮箱' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="160px" prop="time" sortable align="center" label="发送时间">
-        <template slot-scope="scope">
-          <span>{{ scope.row.time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="操作" width="120" fixed="right">
         <template slot-scope="scope">
-          <router-link :to="'/verification-code/edit/'+scope.row.id" title="编辑">
+          <router-link :to="'/comment/edit/'+scope.row.id" title="编辑">
             <el-button type="primary" size="small" icon="el-icon-edit" />
           </router-link>
-          <router-link :to="'/verification-code/edit/'+scope.row.id" title="删除">
+          <router-link :to="'/comment/edit/'+scope.row.id" title="删除">
             <el-button type="danger" size="small" icon="el-icon-delete" />
           </router-link>
         </template>
@@ -90,18 +104,18 @@
 </template>
 
 <script>
+import { fetchList } from '@/api/comment'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Sticky from '@/components/Sticky' // 粘性header组件
-import { getVerificationCodeList } from '@/api/verification-code'
 
 export default {
-  name: 'VerificationCodeList',
+  name: 'CommentList',
   components: { Pagination, Sticky },
   filters: {
     statusFilter(status) {
       const statusMap = {
-        'publish': 'success',
-        'draft': 'info',
+        'checked': 'success',
+        '-': 'info',
         'delete': 'danger'
       }
       return statusMap[status]
@@ -118,8 +132,8 @@ export default {
       },
       search_content: '',
       search_date: '',
-      search_method: '',
-      search_type: '',
+      search_recommend: '',
+      search_top: '',
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',
@@ -156,9 +170,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      // console.log('用户传过来的id')
-      getVerificationCodeList(this.listQuery).then(response => {
-        console.log(response.data.items)
+      fetchList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
         this.listLoading = false
@@ -198,8 +210,8 @@ export default {
   padding-right: 20px;
   -webkit-transition: 600ms ease position;
   transition: 600ms ease position;
-  background: -webkit-gradient(linear, left top, right top, from(#20b6f9), color-stop(0%, #20b6f9), color-stop(100%, #2178f1), to(#2178f1));
-  background: linear-gradient(90deg, #20b6f9 0%, #20b6f9 0%, #2178f1 100%, #2178f1 100%);
+  /*background: -webkit-gradient(linear, left top, right top, from(#20b6f9), color-stop(0%, #20b6f9), color-stop(100%, #2178f1), to(#2178f1));*/
+  /*background: linear-gradient(90deg, #20b6f9 0%, #20b6f9 0%, #2178f1 100%, #2178f1 100%);*/
   background: powderblue;
 }
 </style>

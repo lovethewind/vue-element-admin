@@ -106,7 +106,7 @@ module.exports = [
     url: '/admin/user/list',
     type: 'get',
     response: config => {
-      const { join_date, username, page = 1, limit = 20, sort } = config.query
+      const { join_date, username, page = 1, limit = 10, sort } = config.query
 
       let mockList = List.filter(item => {
         if (join_date && item.type !== join_date) return false

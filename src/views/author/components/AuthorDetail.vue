@@ -161,63 +161,7 @@ export default {
       loading: false,
       userListOptions: [],
       article_content_length: '', // 修改的文章内容的长度（纯文本)
-      options: [
-        {
-          id: 1,
-          name: '根目录'
-        },
-        {
-          id: 2,
-          name: '我要学习',
-          children: [
-            {
-              id: 21,
-              name: '前端开发'
-            },
-            {
-              id: 22,
-              name: '后端开发'
-            }
-          ]
-        },
-        {
-          id: 3,
-          name: '心情杂谈',
-          children: [
-            {
-              id: 31,
-              name: '故事分享'
-            },
-            {
-              id: 32,
-              name: '讨论咨询'
-            }
-          ]
-        },
-        {
-          id: 4,
-          name: '资源分享',
-          children: [
-            {
-              id: 41,
-              name: '音乐'
-            },
-            {
-              id: 42,
-              name: '视频'
-            },
-            {
-              id: 43,
-              name: '其他'
-            }
-          ]
-        },
-        {
-          id: 5,
-          name: '通知公告',
-          disabled: true
-        }
-      ],
+      options: '',
       optionProps: {
         value: 'id',
         label: 'name',
@@ -297,7 +241,7 @@ export default {
           })
           this.loading = false
           this.$store.dispatch('tagsView/delView', this.$route)
-          this.$router.go(-1)
+          this.$router.push('/author')
         } else {
           console.log('error submit!!')
           return false

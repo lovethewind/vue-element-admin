@@ -20,88 +20,30 @@
       <div class="createPost-main-container">
         <el-row>
           <el-col :span="16">
-            <el-form-item label="用户名:" style="margin-bottom: 20px;">
-              <el-input v-model="postForm.username" style="width: 220px" />
+            <el-form-item label="分类名:" style="margin-bottom: 20px;">
+              <el-input v-model="postForm.name" style="width: 220px" />
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row style="margin-bottom: 20px;">
           <el-col :span="8">
-            <el-form-item style="margin-bottom: 20px;">
-              <span style="color: red;font-size: 16px;font-weight: bold">{{ isEdit?'修改密码':'设置初始密码' }}</span>
+            <el-form-item label="父级分类:" class="postInfo-container-item">
+              <el-input v-model="postForm.parent_id.name" style="width: 220px" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
-          <div class="postInfo-container">
-            <el-row style="margin-bottom: 20px;">
-              <el-col :span="8">
-                <el-form-item label="网站管理员:" class="postInfo-container-item">
-                  <el-radio v-model="postForm.is_staff" label="true">是</el-radio>
-                  <el-radio v-model="postForm.is_staff" label="false">否</el-radio>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item label="超级管理员:" class="postInfo-container-item">
-                  <el-radio v-model="postForm.is_super" label="true">是</el-radio>
-                  <el-radio v-model="postForm.is_super" label="false">否</el-radio>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item v-if="isEdit" label="新密码:" style="margin-bottom: 20px;">
-                  <el-input v-model="postForm.new_password" style="width: 220px" />
-                </el-form-item>
-                <el-form-item v-else label="初始密码:" style="margin-bottom: 20px;">
-                  <el-input v-model="postForm.password" style="width: 220px" />
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row style="margin-bottom: 20px;">
-              <el-col :span="16">
-                <el-form-item label="用户状态:" class="postInfo-container-item">
-                  <el-radio v-model="postForm.status" label="1">正常</el-radio>
-                  <el-radio v-model="postForm.status" label="0">禁止登录</el-radio>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item v-if="isEdit" label="确认新密码:" style="margin-bottom: 20px;">
-                  <el-input v-model="postForm.rnew_password" style="width: 220px" />
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </div>
-        </el-row>
-
-        <el-row style="margin-bottom: 20px;">
           <el-col :span="8">
-            <el-form-item label="注册时间" class="postInfo-container-item">
-              <el-date-picker
-                v-model="postForm.join_date"
-                type="datetime"
-                align="left"
-                style="margin-right: 20px"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="上次登录时间:" class="postInfo-container-item">
-              <el-date-picker
-                v-model="postForm.last_login"
-                type="datetime"
-                align="left"
-                style="margin-right: 20px"
-              />
+            <el-form-item label="分类简介:" class="postInfo-container-item">
+              <el-input v-model="postForm.jianjie" type="textarea" :col="4" style="width: 220px" />
             </el-form-item>
           </el-col>
         </el-row>
-
         <el-row style="margin-bottom: 20px;">
-          <el-col :span="8">
-            <el-form-item label="邮箱:" class="postInfo-container-item">
-              <el-input v-model="postForm.email" style="width: 220px;" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="手机号:" class="postInfo-container-item">
-              <el-input v-model="postForm.phone" style="width: 220px;" />
+          <el-col :span="16">
+            <el-form-item label="状态:" class="postInfo-container-item">
+              <el-radio v-model="postForm.status" label="true">可用</el-radio>
+              <el-radio v-model="postForm.status" label="false">禁用</el-radio>
             </el-form-item>
           </el-col>
         </el-row>
@@ -111,34 +53,28 @@
 </template>
 
 <script>
-// import Tinymce from '@/components/Tinymce'
-// import Upload from '@/components/Upload/SingleImage3'
 import Sticky from '@/components/Sticky' // 粘性header组件
 // eslint-disable-next-line no-unused-vars
-import { validURL } from '@/utils/validate'
 import { fetchUser } from '@/api/user'
 // eslint-disable-next-line no-unused-vars
 import { searchUser } from '@/api/remote-search'
-// import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
 import UE from '@/views/article/components/UE'
+import { fetchCategory } from '@/api/category'
 
 const defaultForm = {
   id: '',
-  username: '',
-  password: '123456',
-  is_staff: 'false',
-  is_super: 'false',
-  status: '1',
-  join_date: '',
-  last_login: '',
-  email: '',
-  phone: '',
-  new_password: '',
-  rnew_password: ''
+  name: '',
+  parent_id: {
+    id: '',
+    name: '',
+    status: ''
+  },
+  jianjie: '',
+  status: 'true'
 }
 
 export default {
-  name: 'UserDetail',
+  name: 'CategoryDetail',
   // eslint-disable-next-line vue/no-unused-components
   components: { UE, Sticky },
   // components: { Tinymce, MDinput, Sticky, Warning, CommentDropdown },
@@ -186,7 +122,7 @@ export default {
   },
   methods: {
     fetchData(id) {
-      fetchUser(id).then(response => {
+      fetchCategory(id).then(response => {
         console.log(response.data)
         this.postForm = response.data
         // set tagsview title
@@ -198,12 +134,12 @@ export default {
       })
     },
     setTagsViewTitle() {
-      const title = '编辑用户'
+      const title = '编辑分类'
       const route = Object.assign({}, this.tempRoute, { title: `${title}-${this.postForm.id}` })
       this.$store.dispatch('tagsView/updateVisitedView', route)
     },
     setPageTitle() {
-      const title = '编辑用户'
+      const title = '编辑分类'
       document.title = `${title} - ${this.postForm.id}`
     },
     submitForm() {
@@ -213,13 +149,13 @@ export default {
           this.loading = true
           this.$notify({
             title: '成功',
-            message: '修改用户信息成功',
+            message: '修改分类信息成功',
             type: 'success',
             duration: 2000
           })
           this.loading = false
           this.$store.dispatch('tagsView/delView', this.$route)
-          this.$router.push('/user')
+          this.$router.push('/category')
         } else {
           console.log('error submit!!')
           return false

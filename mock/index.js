@@ -5,6 +5,9 @@ const user = require('./user')
 const role = require('./role')
 const article = require('./article')
 const author = require('./author')
+const verificationCode = require('./verification-code')
+const comment = require('./comment')
+const category = require('./category')
 const search = require('./remote-search')
 
 const mocks = [
@@ -12,7 +15,10 @@ const mocks = [
   ...role,
   ...article,
   ...search,
-  ...author
+  ...author,
+  ...comment,
+  ...category,
+  ...verificationCode
 ]
 
 // for front mock

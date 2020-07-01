@@ -1,15 +1,15 @@
 <template>
   <div v-if="list" class="app-container">
-    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].method" style="text-align: left;height: 100px;">
+    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].is_staff" style="text-align: left;height: 100px;">
       <el-input v-model="search_content" placeholder="请输入用户名/邮箱/手机号" style="width: 200px;margin-right: 20px">搜索</el-input>
-      <el-select v-model="search_type" style="width: 120px;margin-right: 20px" placeholder="性别">
-        <el-option label="注册" value="register" />
-        <el-option label="找回密码" value="find-password" />
-        <el-option label="更换绑定" value="change-blind" />
+      <el-select v-model="search_sex" style="width: 120px;margin-right: 20px" placeholder="性别">
+        <el-option label="男" value="1" />
+        <el-option label="女" value="0" />
+        <el-option label="保密" value="3" />
       </el-select>
-      <el-select v-model="search_method" style="width: 120px;margin-right: 20px" placeholder="验证方式">
-        <el-option label="手机号" value="phone" />
-        <el-option label="邮箱" value="email" />
+      <el-select v-model="search_date_type" style="width: 120px;margin-right: 20px" placeholder="时间类型">
+        <el-option label="登录时间" value="login" />
+        <el-option label="注册时间" value="register" />
       </el-select>
       <el-date-picker
         v-model="search_date"
@@ -22,10 +22,11 @@
         style="margin-right: 20px"
       />
       <el-button type="success" icon="el-icon-search" style="margin-right: 10px">搜索</el-button>
+      <el-button type="info" icon="fa fa-minus-circle"> 批量禁用</el-button>
       <el-button type="danger" icon="el-icon-delete">批量删除</el-button>
     </sticky>
     <el-divider />
-    <el-table v-loading="listLoading" :data="list" :default-sort="{prop: 'time', order: 'descending'}" border fit highlight-current-row style="width: 100%">
+    <el-table v-loading="listLoading" :data="list" :default-sort="{prop: 'last_login', order: 'descending'}" border fit highlight-current-row style="width: 100%">
       <el-table-column
         type="selection"
         width="40"
@@ -33,52 +34,44 @@
         fixed
         @selection-change="handleSelectionChange"
       />
-      <el-table-column align="center" label="ID" prpo="id" sortable width="80">
+      <el-table-column align="center" label="ID" width="60">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" width="120px" label="验证码">
+      <el-table-column label="分类名" width="120px">
         <template slot-scope="scope">
-          <span>{{ scope.row.code }}</span>
+          <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" width="180px" label="验证类型">
+      <el-table-column align="center" label="简介">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.type === 'register'?'success': scope.row.type === 'find-password'?'warning':'info'">
-            <span>{{ scope.row.type === 'register'?'注册': scope.row.type === 'find-password'?'找回密码':'更换绑定' }}</span>
+          <span>{{ scope.row.jianjie }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" width="120px" label="父级分类">
+        <template slot-scope="scope">
+          <span>{{ scope.row.parent_id.name }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="100px" align="center" label="状态">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.status==='true'?'success':'info'">
+            {{ scope.row.status === 'true' ?'可用':'禁用' }}
           </el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="验证账号">
-        <template slot-scope="scope">
-          <span>{{ scope.row.info }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="100px" align="center" label="验证方式">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.method==='phone'?'success':'info'">
-            {{ scope.row.method === 'phone' ?'手机':'邮箱' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="160px" prop="time" sortable align="center" label="发送时间">
-        <template slot-scope="scope">
-          <span>{{ scope.row.time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="操作" width="120" fixed="right">
         <template slot-scope="scope">
-          <router-link :to="'/verification-code/edit/'+scope.row.id" title="编辑">
+          <router-link :to="'/category/edit/'+scope.row.id" title="编辑">
             <el-button type="primary" size="small" icon="el-icon-edit" />
           </router-link>
-          <router-link :to="'/verification-code/edit/'+scope.row.id" title="删除">
+          <router-link :to="'/category/edit/'+scope.row.id" title="删除">
             <el-button type="danger" size="small" icon="el-icon-delete" />
           </router-link>
         </template>
@@ -92,10 +85,10 @@
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Sticky from '@/components/Sticky' // 粘性header组件
-import { getVerificationCodeList } from '@/api/verification-code'
+import { fetchList } from '@/api/category'
 
 export default {
-  name: 'VerificationCodeList',
+  name: 'CategoryList',
   components: { Pagination, Sticky },
   filters: {
     statusFilter(status) {
@@ -118,8 +111,8 @@ export default {
       },
       search_content: '',
       search_date: '',
-      search_method: '',
-      search_type: '',
+      search_sex: '',
+      search_date_type: '',
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',
@@ -156,8 +149,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      // console.log('用户传过来的id')
-      getVerificationCodeList(this.listQuery).then(response => {
+      fetchList(this.listQuery).then(response => {
         console.log(response.data.items)
         this.list = response.data.items
         this.total = response.data.total

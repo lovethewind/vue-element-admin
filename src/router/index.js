@@ -140,6 +140,68 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/category',
+    component: Layout,
+    redirect: '/category/list',
+    name: 'Category',
+    meta: {
+      title: '分类管理',
+      icon: 'el-icon-s-help'
+    },
+    children: [
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/category/edit'),
+        name: 'CategoryEdit',
+        meta: { title: '编辑分类', noCache: true, activeMenu: '/category/list' },
+        hidden: true
+      },
+      {
+        path: 'list',
+        component: () => import('@/views/category/list'),
+        name: 'CategoryList',
+        meta: { title: '分类列表', icon: 'list' }
+      },
+      {
+        path: 'create',
+        component: () => import('@/views/category/create'),
+        name: 'CategoryCreate',
+        meta: { title: '新建分类', icon: 'edit' }
+      }
+    ]
+  },
+  {
+    path: '/comment',
+    component: Layout,
+    redirect: '/comment/list',
+    name: 'Comment',
+    meta: {
+      title: '评论管理',
+      icon: 'el-icon-chat-dot-square'
+    },
+    children: [
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/comment/edit'),
+        name: 'CommentEdit',
+        meta: { title: '编辑评论', noCache: true, activeMenu: '/comment/list' },
+        hidden: true
+      },
+      {
+        path: 'list',
+        component: () => import('@/views/comment/list'),
+        name: 'CommentList',
+        meta: { title: '评论列表', icon: 'el-icon-chat-line-square' }
+      },
+      {
+        path: 'create',
+        component: () => import('@/views/comment/create'),
+        name: 'CommentCreate',
+        meta: { title: '新建评论', icon: 'edit' }
+      }
+    ]
+  },
+  {
     path: '/author',
     component: Layout,
     redirect: '/author/list',
@@ -202,14 +264,14 @@ export const constantRoutes = [
     name: 'VerificationCode',
     meta: {
       title: '验证码管理',
-      icon: 'user'
+      icon: 'el-icon-news'
     },
     children: [
       {
         path: 'list',
         component: () => import('@/views/verification-code/list'),
         name: 'VerificationCodeList',
-        meta: { title: '验证码列表', icon: 'peoples' }
+        meta: { title: '验证码列表', icon: 'list' }
       },
       {
         path: 'create',
