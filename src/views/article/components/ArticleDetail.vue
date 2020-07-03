@@ -15,6 +15,9 @@
         <el-button v-loading="loading" type="warning" @click="draftForm">
           草稿
         </el-button>
+        <el-button v-loading="loading" type="info" @click="cancelForm">
+          取消
+        </el-button>
       </sticky>
 
       <div class="createPost-main-container">
@@ -356,6 +359,10 @@ export default {
         duration: 1000
       })
       this.postForm.status = '草稿'
+      this.$store.dispatch('tagsView/delView', this.$route)
+      this.$router.go(-1)
+    },
+    cancelForm() {
       this.$store.dispatch('tagsView/delView', this.$route)
       this.$router.go(-1)
     },

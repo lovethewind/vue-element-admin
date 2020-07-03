@@ -111,7 +111,18 @@ module.exports = [
 
   {
     url: '/admin/article/update',
-    type: 'post',
+    type: 'put',
+    response: _ => {
+      return {
+        code: 20000,
+        data: 'success'
+      }
+    }
+  },
+
+  {
+    url: '/admin/article/delete',
+    type: 'delete',
     response: _ => {
       return {
         code: 20000,

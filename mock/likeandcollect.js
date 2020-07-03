@@ -6,25 +6,33 @@ const count = 100
 for (let i = 0; i < count; i++) {
   List.push(Mock.mock({
     id: '@increment',
-    code: '@integer(100000,900000,6)',
-    'type|1': ['register', 'find-password', 'change-blind'],
-    'method|1': ['phone', 'email'],
-    'info|1': ['@email', '@integer(10000000000,20000000000,11)'],
+    author: {
+      id: '@increment',
+      user: {
+        id: '@increment',
+        username: '@cfirst' + '@clast'
+      }
+    },
+    article: {
+      id: '@increment',
+      title: '@csentence'
+    },
+    'like_status|1': ['true', 'false'],
+    'collect_status|1': ['true', 'false'],
     time: +Mock.Random.date('T')
   }))
 }
 
 module.exports = [
-  // verification-code list
+  // likeandcollect list
   {
-    url: '/admin/verification-code/list',
+    url: '/admin/likeandcollect/list',
     type: 'get',
     response: config => {
-      const { phone, email, page = 1, limit = 10, sort } = config.query
-      console.log('用户传过来的id')
+      const { article, author, page = 1, limit = 10, sort } = config.query
       let mockList = List.filter(item => {
-        if (phone && item.type !== phone) return false
-        if (email && item.title !== email) return false
+        if (author && item.type !== author) return false
+        if (article && item.title !== article) return false
         return true
       })
 
@@ -43,31 +51,30 @@ module.exports = [
       }
     }
   },
-  // verification-code detail
+  // likeandcollect detail
   {
-    url: '/admin/verification-code/detail',
+    url: '/admin/likeandcollect/detail',
     type: 'get',
     response: config => {
       const { id } = config.query
-      console.log('用户传过来的id', id)
-      for (const verificationCode of List) {
-        if (verificationCode.id === +id) {
+      for (const likeandcollect of List) {
+        if (likeandcollect.id === +id) {
           return {
             code: 20000,
-            data: verificationCode
+            data: likeandcollect
           }
         }
       }
     }
   },
-  // verification-code update
+  // likeandcollect update
   {
-    url: '/admin/verification-code/update',
+    url: '/admin/likeandcollect/update',
     type: 'put',
     response: config => {
       const { id } = config.query
-      for (const verificationCode of List) {
-        if (verificationCode.id === +id) {
+      for (const likeandcollect of List) {
+        if (likeandcollect.id === +id) {
           return {
             code: 20000,
             data: 'success'
@@ -76,14 +83,14 @@ module.exports = [
       }
     }
   },
-  // verification-code delete
+  // likeandcollect delete
   {
-    url: '/admin/verification-code/delete',
+    url: '/admin/likeandcollect/delete',
     type: 'delete',
     response: config => {
       const { id } = config.query
-      for (const verificationCode of List) {
-        if (verificationCode.id === +id) {
+      for (const likeandcollect of List) {
+        if (likeandcollect.id === +id) {
           return {
             code: 20000,
             data: 'success'

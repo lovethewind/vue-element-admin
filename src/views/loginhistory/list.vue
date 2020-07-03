@@ -1,16 +1,7 @@
 <template>
   <div v-if="list" class="app-container">
-    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].id" style="text-align: left;">
-      <el-input v-model="search_content" placeholder="请输入验证账号" style="width: 200px;margin-right: 20px">搜索</el-input>
-      <el-select v-model="search_type" style="width: 120px;margin-right: 20px" placeholder="验证类型">
-        <el-option label="注册" value="register" />
-        <el-option label="找回密码" value="find-password" />
-        <el-option label="更换绑定" value="change-blind" />
-      </el-select>
-      <el-select v-model="search_method" style="width: 120px;margin-right: 20px" placeholder="验证方式">
-        <el-option label="手机号" value="phone" />
-        <el-option label="邮箱" value="email" />
-      </el-select>
+    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].id">
+      <el-input v-model="search_content" placeholder="请输入用户名/地址/设备名" style="width: 200px;margin:0 10px">搜索</el-input>
       <el-date-picker
         v-model="search_date"
         type="datetimerange"
@@ -21,7 +12,7 @@
         align="left"
         style="margin-right: 20px"
       />
-      <el-button type="success" icon="el-icon-search" style="margin-right: 10px">搜索</el-button>
+      <el-button type="success" icon="el-icon-search" style="margin-right: 250px">搜索</el-button>
       <el-button type="danger" icon="el-icon-delete">批量删除</el-button>
     </sticky>
     <el-divider />
@@ -39,35 +30,31 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" width="120px" label="验证码">
+      <el-table-column align="center" width="120px" label="登录用户">
         <template slot-scope="scope">
-          <span>{{ scope.row.code }}</span>
+          <span>{{ scope.row.author.user.username }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" width="180px" label="验证类型">
+      <el-table-column align="center" width="200px" label="登录IP">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.type === 'register'?'success': scope.row.type === 'find-password'?'warning':'info'">
-            <span>{{ scope.row.type === 'register'?'注册': scope.row.type === 'find-password'?'找回密码':'更换绑定' }}</span>
-          </el-tag>
+          <span>{{ scope.row.ip }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="验证账号">
+      <el-table-column align="center" width="160px" prop="device" sortable label="登录设备">
         <template slot-scope="scope">
-          <span>{{ scope.row.info }}</span>
+          <span>{{ scope.row.device }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="100px" align="center" label="验证方式">
+      <el-table-column align="center" label="登录地址">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.method==='phone'?'success':'info'">
-            {{ scope.row.method === 'phone' ?'手机':'邮箱' }}
-          </el-tag>
+          <span>{{ scope.row.address }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="160px" prop="time" sortable align="center" label="发送时间">
+      <el-table-column width="160px" prop="time" sortable align="center" label="登录时间">
         <template slot-scope="scope">
           <span>{{ scope.row.time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
@@ -75,10 +62,10 @@
 
       <el-table-column align="center" label="操作" width="120" fixed="right">
         <template slot-scope="scope">
-          <router-link :to="'/verification-code/edit/'+scope.row.id" title="编辑">
+          <router-link :to="'/loginhistory/edit/'+scope.row.id" title="编辑">
             <el-button type="primary" size="small" icon="el-icon-edit" />
           </router-link>
-          <router-link :to="'/verification-code/edit/'+scope.row.id" title="删除">
+          <router-link :to="'/loginhistory/edit/'+scope.row.id" title="删除">
             <el-button type="danger" size="small" icon="el-icon-delete" />
           </router-link>
         </template>
@@ -92,17 +79,19 @@
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Sticky from '@/components/Sticky' // 粘性header组件
-import { getVerificationCodeList } from '@/api/verification-code'
+import { fetchList } from '@/api/loginhistory'
 
 export default {
-  name: 'VerificationCodeList',
+  name: 'LoginHistoryList',
   components: { Pagination, Sticky },
   filters: {
     statusFilter(status) {
       const statusMap = {
-        'publish': 'success',
-        'draft': 'info',
-        'delete': 'danger'
+        'image': '',
+        'video': 'info',
+        'aduio': 'danger',
+        'txt': 'warning',
+        'other': 'success'
       }
       return statusMap[status]
     }
@@ -157,7 +146,7 @@ export default {
     getList() {
       this.listLoading = true
       // console.log('用户传过来的id')
-      getVerificationCodeList(this.listQuery).then(response => {
+      fetchList(this.listQuery).then(response => {
         console.log(response.data.items)
         this.list = response.data.items
         this.total = response.data.total
@@ -194,7 +183,7 @@ export default {
   line-height: 50px;
   position: relative;
   width: 100%;
-  text-align: center;
+  text-align: left;
   padding-right: 20px;
   -webkit-transition: 600ms ease position;
   transition: 600ms ease position;

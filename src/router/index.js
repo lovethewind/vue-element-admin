@@ -91,9 +91,10 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/documentation/index'),
         name: 'Documentation',
-        meta: { title: '文档', icon: 'documentation', affix: true }
+        meta: { title: '文档', icon: 'documentation' }
       }
-    ]
+    ],
+    hidden: true
   },
   {
     path: '/guide',
@@ -106,7 +107,8 @@ export const constantRoutes = [
         name: 'Guide',
         meta: { title: '引导页', icon: 'guide', noCache: true }
       }
-    ]
+    ],
+    hidden: true
   },
   {
     path: '/article',
@@ -115,7 +117,7 @@ export const constantRoutes = [
     name: 'Article',
     meta: {
       title: '文章管理',
-      icon: 'el-icon-s-help'
+      icon: 'education'
     },
     children: [
       {
@@ -146,7 +148,7 @@ export const constantRoutes = [
     name: 'Category',
     meta: {
       title: '分类管理',
-      icon: 'el-icon-s-help'
+      icon: 'el-icon-refrigerator'
     },
     children: [
       {
@@ -167,6 +169,37 @@ export const constantRoutes = [
         component: () => import('@/views/category/create'),
         name: 'CategoryCreate',
         meta: { title: '新建分类', icon: 'edit' }
+      }
+    ]
+  },
+  {
+    path: '/likeandcollect',
+    component: Layout,
+    redirect: '/likeandcollect/list',
+    name: 'LikeAndCollect',
+    meta: {
+      title: '喜欢/收藏管理',
+      icon: 'star'
+    },
+    children: [
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/likeandcollect/edit'),
+        name: 'LikeAndCollectEdit',
+        meta: { title: '编辑喜欢/收藏', noCache: true, activeMenu: '/likeandcollect/list' },
+        hidden: true
+      },
+      {
+        path: 'list',
+        component: () => import('@/views/likeandcollect/list'),
+        name: 'LikeAndCollectList',
+        meta: { title: '喜欢/收藏列表', icon: 'el-icon-ice-cream-round' }
+      },
+      {
+        path: 'create',
+        component: () => import('@/views/likeandcollect/create'),
+        name: 'LikeAndCollectCreate',
+        meta: { title: '新建喜欢/收藏', icon: 'edit' }
       }
     ]
   },
@@ -202,6 +235,37 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/mediafile',
+    component: Layout,
+    redirect: '/mediafile/list',
+    name: 'MediaFile',
+    meta: {
+      title: '文件管理',
+      icon: 'el-icon-files'
+    },
+    children: [
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/mediafile/edit'),
+        name: 'MediaFileEdit',
+        meta: { title: '编辑文件', noCache: true, activeMenu: '/mediafile/list' },
+        hidden: true
+      },
+      {
+        path: 'list',
+        component: () => import('@/views/mediafile/list'),
+        name: 'MediaFileList',
+        meta: { title: '文件列表', icon: 'el-icon-tickets' }
+      },
+      {
+        path: 'create',
+        component: () => import('@/views/mediafile/create'),
+        name: 'MediaFileCreate',
+        meta: { title: '新建文件', icon: 'edit' }
+      }
+    ]
+  },
+  {
     path: '/author',
     component: Layout,
     redirect: '/author/list',
@@ -215,7 +279,7 @@ export const constantRoutes = [
         path: 'list',
         component: () => import('@/views/author/list'),
         name: 'AuthorList',
-        meta: { title: '作者列表', icon: 'people' }
+        meta: { title: '作者管理', icon: 'people' }
       },
       {
         path: 'edit/:id(\\d+)',
@@ -284,6 +348,68 @@ export const constantRoutes = [
         component: () => import('@/views/verification-code/edit'),
         name: 'VerificationCodeEdit',
         meta: { title: '验证码修改', icon: 'edit' },
+        hidden: true
+      }
+    ]
+  },
+  {
+    path: '/loginhistory',
+    component: Layout,
+    redirect: '/loginhistory/list',
+    name: 'LoginHistory',
+    meta: {
+      title: '登录历史管理',
+      icon: 'el-icon-c-scale-to-original'
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/loginhistory/list'),
+        name: 'LoginHistoryList',
+        meta: { title: '登录历史列表', icon: 'list' }
+      },
+      {
+        path: 'create',
+        component: () => import('@/views/loginhistory/create'),
+        name: 'LoginHistoryCreate',
+        meta: { title: '新增登录历史', icon: 'edit' }
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/loginhistory/edit'),
+        name: 'LoginHistoryEdit',
+        meta: { title: '登录历史修改', noCache: true, activeMenu: '/loginhistory/list' },
+        hidden: true
+      }
+    ]
+  },
+  {
+    path: '/banner',
+    component: Layout,
+    redirect: '/banner/list',
+    name: 'Banner',
+    meta: {
+      title: '轮播图管理',
+      icon: 'el-icon-postcard'
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/banner/list'),
+        name: 'BannerList',
+        meta: { title: '轮播图列表', icon: 'list' }
+      },
+      {
+        path: 'create',
+        component: () => import('@/views/banner/create'),
+        name: 'BannerCreate',
+        meta: { title: '新增轮播图', icon: 'edit' }
+      },
+      {
+        path: 'edit/:id(\\d+)',
+        component: () => import('@/views/banner/edit'),
+        name: 'BannerEdit',
+        meta: { title: '轮播图修改', noCache: true, activeMenu: '/banner/list' },
         hidden: true
       }
     ]

@@ -1,5 +1,5 @@
 <template>
-  <div :style="{height:height+'px',zIndex:zIndex, borderRadius:borderRadius+'px'}">
+  <div :style="{height:height+'px',zIndex:zIndex, borderRadius:borderRadius+'px', textAlign:textAlign}">
     <div
       :class="className"
       :style="{top:(isSticky ? stickyTop +'px' : ''),zIndex:zIndex,position:position,width:width,height:height+'px'}"
@@ -26,6 +26,10 @@ export default {
     borderRadius: {
       type: Number,
       default: 5
+    },
+    textAlign: {
+      type: String,
+      default: 'left'
     },
     className: {
       type: String,

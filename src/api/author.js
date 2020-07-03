@@ -16,3 +16,18 @@ export function fetchAuthor(id) {
   })
 }
 
+export function updateAuthor(query) {
+  return request({
+    url: '/admin/author/update',
+    method: 'get',
+    params: { query }
+  })
+}
+
+export function deleteAuthor(id) {
+  return request({
+    url: '/admin/author/delete',
+    method: 'get',
+    params: { id }
+  })
+}

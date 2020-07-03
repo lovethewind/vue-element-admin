@@ -1,15 +1,13 @@
 <template>
   <div v-if="list" class="app-container">
-    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].id" style="text-align: left;">
-      <el-input v-model="search_content" placeholder="请输入验证账号" style="width: 200px;margin-right: 20px">搜索</el-input>
-      <el-select v-model="search_type" style="width: 120px;margin-right: 20px" placeholder="验证类型">
-        <el-option label="注册" value="register" />
-        <el-option label="找回密码" value="find-password" />
-        <el-option label="更换绑定" value="change-blind" />
-      </el-select>
-      <el-select v-model="search_method" style="width: 120px;margin-right: 20px" placeholder="验证方式">
-        <el-option label="手机号" value="phone" />
-        <el-option label="邮箱" value="email" />
+    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].id" style="text-align: left">
+      <el-input v-model="search_content" placeholder="请输入用户名/文件标题" style="width: 200px;margin:0 10px">搜索</el-input>
+      <el-select v-model="search_type" style="width: 120px;margin-right: 20px" placeholder="类型">
+        <el-option label="图片" value="image" />
+        <el-option label="视频" value="video" />
+        <el-option label="音频" value="audio" />
+        <el-option label="文本" value="txt" />
+        <el-option label="附件" value="other" />
       </el-select>
       <el-date-picker
         v-model="search_date"
@@ -21,7 +19,7 @@
         align="left"
         style="margin-right: 20px"
       />
-      <el-button type="success" icon="el-icon-search" style="margin-right: 10px">搜索</el-button>
+      <el-button type="success" icon="el-icon-search" style="margin-right: 100px">搜索</el-button>
       <el-button type="danger" icon="el-icon-delete">批量删除</el-button>
     </sticky>
     <el-divider />
@@ -39,35 +37,47 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" width="120px" label="验证码">
+      <el-table-column align="center" width="120px" label="作者">
         <template slot-scope="scope">
-          <span>{{ scope.row.code }}</span>
+          <span>{{ scope.row.author.user.username }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" width="180px" label="验证类型">
+      <el-table-column align="center" width="260px" label="文件标题">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.type === 'register'?'success': scope.row.type === 'find-password'?'warning':'info'">
-            <span>{{ scope.row.type === 'register'?'注册': scope.row.type === 'find-password'?'找回密码':'更换绑定' }}</span>
+          <span>{{ scope.row.title }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" width="240px" label="链接">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.url === 'true'?'success':'info'">
+            <span>{{ scope.row.url }}</span>
           </el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="验证账号">
+      <el-table-column align="center" width="100px" label="类型">
         <template slot-scope="scope">
-          <span>{{ scope.row.info }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="100px" align="center" label="验证方式">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.method==='phone'?'success':'info'">
-            {{ scope.row.method === 'phone' ?'手机':'邮箱' }}
+          <el-tag :type="scope.row.type | statusFilter">
+            <span>{{ scope.row.type === 'image'?'图片':scope.row.type === 'video'?'视频':scope.row.type === 'audio'?'音频':scope.row.type === 'txt'?'文本':'附件' }}</span>
           </el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column width="160px" prop="time" sortable align="center" label="发送时间">
+      <el-table-column align="center" width="120px" label="大小">
+        <template slot-scope="scope">
+          <span>{{ scope.row.size }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" width="120px" label="下载量">
+        <template slot-scope="scope">
+          <span>{{ scope.row.count }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="160px" prop="time" sortable align="center" label="时间">
         <template slot-scope="scope">
           <span>{{ scope.row.time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
@@ -75,10 +85,10 @@
 
       <el-table-column align="center" label="操作" width="120" fixed="right">
         <template slot-scope="scope">
-          <router-link :to="'/verification-code/edit/'+scope.row.id" title="编辑">
+          <router-link :to="'/mediafile/edit/'+scope.row.id" title="编辑">
             <el-button type="primary" size="small" icon="el-icon-edit" />
           </router-link>
-          <router-link :to="'/verification-code/edit/'+scope.row.id" title="删除">
+          <router-link :to="'/mediafile/edit/'+scope.row.id" title="删除">
             <el-button type="danger" size="small" icon="el-icon-delete" />
           </router-link>
         </template>
@@ -92,17 +102,19 @@
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Sticky from '@/components/Sticky' // 粘性header组件
-import { getVerificationCodeList } from '@/api/verification-code'
+import { fetchList } from '@/api/mediafile'
 
 export default {
-  name: 'VerificationCodeList',
+  name: 'LikeAndCollectList',
   components: { Pagination, Sticky },
   filters: {
     statusFilter(status) {
       const statusMap = {
-        'publish': 'success',
-        'draft': 'info',
-        'delete': 'danger'
+        'image': '',
+        'video': 'info',
+        'aduio': 'danger',
+        'txt': 'warning',
+        'other': 'success'
       }
       return statusMap[status]
     }
@@ -157,7 +169,7 @@ export default {
     getList() {
       this.listLoading = true
       // console.log('用户传过来的id')
-      getVerificationCodeList(this.listQuery).then(response => {
+      fetchList(this.listQuery).then(response => {
         console.log(response.data.items)
         this.list = response.data.items
         this.total = response.data.total

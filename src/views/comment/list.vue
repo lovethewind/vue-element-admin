@@ -1,7 +1,7 @@
 <template>
   <div v-if="list" class="app-container">
-    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].id" style="text-align: left;height: 100px;">
-      <el-input v-model="search_content" placeholder="请输入标题/作者/内容搜索" style="width: 250px;margin-right: 20px">搜索</el-input>
+    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].id">
+      <el-input v-model="search_content" placeholder="请输入文章标题/作者/评论内容搜索" style="width: 250px;margin-right: 20px">搜索</el-input>
       <el-date-picker
         v-model="search_date"
         type="datetimerange"
@@ -12,19 +12,12 @@
         align="right"
         style="margin-right: 20px"
       />
-      <el-select v-model="search_top" style="width: 120px;margin-right: 20px" placeholder="是否置顶">
-        <el-option label="已置顶" value="1" />
-        <el-option label="未置顶" value="0" />
-      </el-select>
       <el-select v-model="search_recommend" style="width: 120px;margin-right: 20px" placeholder="是否推荐">
         <el-option label="已推荐" value="1" />
         <el-option label="未推荐" value="0" />
       </el-select>
       <el-button type="success" icon="el-icon-search" style="margin-right: 30px">搜索</el-button>
-      <p style="text-align: left">
-        <el-button type="success" icon="fa fa-chevron-up" style="margin-left: 63px"> 批量置顶</el-button>
-        <el-button type="danger" icon="el-icon-delete" style="margin-left: 30px">批量删除</el-button>
-      </p>
+      <el-button type="danger" icon="el-icon-delete" style="margin-left: 30px">批量删除</el-button>
     </sticky>
     <el-divider />
     <el-table v-loading="listLoading" :data="list" :default-sort="{prop: 'time', order: 'descending'}" border fit highlight-current-row style="width: 100%">

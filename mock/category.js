@@ -61,5 +61,38 @@ module.exports = [
         }
       }
     }
+  },
+  // category update
+  {
+    url: '/admin/category/update',
+    type: 'put',
+    response: config => {
+      const { id } = config.query
+      for (const category of List) {
+        if (category.id === +id) {
+          return {
+            code: 20000,
+            data: 'success'
+          }
+        }
+      }
+    }
+  },
+  // category delete
+  {
+    url: '/admin/category/delete',
+    type: 'delete',
+    response: config => {
+      const { id } = config.query
+      for (const category of List) {
+        if (category.id === +id) {
+          return {
+            code: 20000,
+            data: 'success'
+          }
+        }
+      }
+    }
   }
+
 ]

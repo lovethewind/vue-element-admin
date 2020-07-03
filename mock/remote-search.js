@@ -18,9 +18,10 @@ module.exports = [
     response: config => {
       const { name } = config.query
       const mockNameList = NameList.filter(item => {
-        // const lowerCaseName = item.name.toLowerCase()
+        const lowerCaseName = name.toLowerCase()
+        if (lowerCaseName && item.name.indexOf(lowerCaseName) < 0) return false
         // return !(name && lowerCaseName.indexOf(name.toLowerCase()) < 0)
-        return !(name)
+        return true
       })
       return {
         code: 20000,

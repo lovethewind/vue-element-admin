@@ -1,6 +1,6 @@
 <template>
   <div v-if="list" class="app-container">
-    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].is_staff" style="text-align: left;height: 100px;">
+    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].id" style="text-align: left;height: 100px;">
       <el-input v-model="search_content" placeholder="请输入用户名/邮箱/手机号" style="width: 200px;margin-right: 20px">搜索</el-input>
       <el-select v-model="search_sex" style="width: 120px;margin-right: 20px" placeholder="性别">
         <el-option label="男" value="1" />

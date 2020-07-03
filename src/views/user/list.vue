@@ -1,11 +1,14 @@
 <template>
   <div v-if="list" class="app-container">
-    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].is_staff" style="text-align: left;height: 100px;">
-      <el-input v-model="search_content" placeholder="请输入用户名/邮箱/手机号" style="width: 200px;margin-right: 20px">搜索</el-input>
-      <el-select v-model="search_sex" style="width: 120px;margin-right: 20px" placeholder="性别">
-        <el-option label="男" value="1" />
-        <el-option label="女" value="0" />
-        <el-option label="保密" value="3" />
+    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].id" style="text-align: left;height: 100px;">
+      <el-input v-model="search_content" placeholder="请输入用户名/邮箱/手机号" style="width: 200px;margin:0  10px">搜索</el-input>
+      <el-select v-model="search_sex" style="width: 120px;margin-right: 20px" placeholder="状态">
+        <el-option label="正常" value="1" />
+        <el-option label="禁止登录" value="0" />
+      </el-select>
+      <el-select v-model="search_isstaff" style="width: 120px;margin-right: 20px" placeholder="网站管理员">
+        <el-option label="是" value="true" />
+        <el-option label="否" value="false" />
       </el-select>
       <el-select v-model="search_date_type" style="width: 120px;margin-right: 20px" placeholder="时间类型">
         <el-option label="登录时间" value="login" />
@@ -19,7 +22,7 @@
         start-placeholder="开始日期"
         end-placeholder="结束日期"
         align="left"
-        style="margin-right: 20px"
+        style="margin-right: 10px"
       />
       <el-button type="success" icon="el-icon-search" style="margin-right: 10px">搜索</el-button>
       <el-button type="info" icon="fa fa-minus-circle"> 批量禁用</el-button>
@@ -142,6 +145,7 @@ export default {
       search_content: '',
       search_date: '',
       search_sex: '',
+      search_isstaff: '',
       search_date_type: '',
       pickerOptions: {
         shortcuts: [{

@@ -2,15 +2,15 @@ import request from '@/utils/request'
 
 export function fetchList(query) {
   return request({
-    url: '/admin/article/list',
+    url: '/admin/likeandcollect/list',
     method: 'get',
     params: query
   })
 }
 
-export function fetchArticle(id) {
+export function fetchLikeAndCollect(id) {
   return request({
-    url: '/admin/article/detail',
+    url: '/admin/likeandcollect/detail',
     method: 'get',
     params: { id }
   })
@@ -18,15 +18,15 @@ export function fetchArticle(id) {
 
 export function fetchPv(pv) {
   return request({
-    url: '/admin/article/pv',
+    url: '/admin/likeandcollect/pv',
     method: 'get',
     params: { pv }
   })
 }
 
-export function createArticle(data) {
+export function createLikeAndCollect(data) {
   return request({
-    url: '/admin/article/create',
+    url: '/admin/likeandcollect/create',
     method: 'post',
     data
   })
@@ -39,12 +39,3 @@ export function updateArticle(data) {
     data
   })
 }
-
-export function deleteArticle(id) {
-  return request({
-    url: '/admin/article/delete',
-    method: 'get',
-    params: { id }
-  })
-}
-

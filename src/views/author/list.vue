@@ -1,16 +1,13 @@
 <template>
   <div v-if="list" class="app-container">
-    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].user.is_staff">
+    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].id">
       <el-input v-model="search_content" placeholder="请输入用户名/邮箱/手机号" style="width: 200px;margin-right: 20px">搜索</el-input>
-      <el-select v-model="search_sex" style="width: 120px;margin-right: 20px" placeholder="性别">
+      <el-select v-model="search_sex" style="width: 80px;margin-right: 20px" placeholder="性别">
         <el-option label="男" value="male" />
         <el-option label="女" value="famale" />
         <el-option label="保密" value="security" />
       </el-select>
-      <el-select v-model="search_date_type" style="width: 120px;margin-right: 20px" placeholder="时间类型">
-        <el-option label="登录时间" value="login" />
-        <el-option label="注册时间" value="register" />
-      </el-select>
+      <el-input v-model="search_agestart" type="number" placeholder="年龄" label="开始年龄" style="width: 70px;font-size: 8px" /> ~ <el-input v-model="search_ageend" placeholder="年龄" type="number" label="结束年龄" style="width: 70px;font-size: 8px;margin-right: 10px" />
       <el-date-picker
         v-model="search_date"
         type="datetimerange"
@@ -42,13 +39,13 @@
 
       <el-table-column label="用户名" width="100px">
         <template slot-scope="{row}">
-          <router-link :to="'/article/edit/'+row.id" class="link-type">
+          <router-link :to="'/user/edit/'+row.id" class="link-type">
             <span>{{ row.user.username }}</span>
           </router-link>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="头像" width="80">
+      <el-table-column align="center" label="头像" width="100">
         <template slot-scope="scope">
           <img :src="scope.row.headimg" style="width: 40px;height: 40px;cursor: pointer;border-radius: 5px" alt="">
         </template>
@@ -60,7 +57,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column width="60px" align="center" label="年龄">
+      <el-table-column width="80px" align="center" prop="age" sortable label="年龄">
         <template slot-scope="scope">
           <span>{{ scope.row.age }}</span>
         </template>
@@ -99,12 +96,6 @@
       <el-table-column width="160px" prop="user.last_login" sortable align="center" label="上次登录时间">
         <template slot-scope="scope">
           <span>{{ scope.row.user.last_login | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="160px" prop="user.join_date" sortable align="center" label="注册时间">
-        <template slot-scope="scope">
-          <span>{{ scope.row.user.join_date | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
 
@@ -154,7 +145,8 @@ export default {
       search_content: '',
       search_date: '',
       search_sex: '',
-      search_date_type: '',
+      search_agestart: '',
+      search_ageend: '',
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',
@@ -236,4 +228,12 @@ export default {
   background: linear-gradient(90deg, #20b6f9 0%, #20b6f9 0%, #2178f1 100%, #2178f1 100%);
   background: powderblue;
 }
+  /deep/  input::-webkit-outer-spin-button,
+   /deep/  input::-webkit-inner-spin-button{
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  /deep/  input[type='number']{
+    -moz-appearance: textfield;
+  }
 </style>

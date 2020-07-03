@@ -22,9 +22,7 @@ for (let i = 0; i < count; i++) {
       last_login: +Mock.Random.date('T'),
       email: '@email',
       phone: '@integer(10000000000,20000000000,11)'
-    },
-    forecast: '@float(0, 100, 2, 2)',
-    pageviews: '@integer(300, 5000)'
+    }
   }))
 }
 
@@ -59,17 +57,49 @@ module.exports = [
       }
     }
   },
-  // user detail
+  // author detail
   {
     url: '/admin/author/detail',
     type: 'get',
+    response: config => {
+      const { id } = config.query
+      for (const author of List) {
+        if (author.id === +id) {
+          return {
+            code: 20000,
+            data: author
+          }
+        }
+      }
+    }
+  },
+  // author update
+  {
+    url: '/admin/author/update',
+    type: 'put',
+    response: config => {
+      const { id } = config.query
+      for (const author of List) {
+        if (author.id === +id) {
+          return {
+            code: 20000,
+            data: 'success'
+          }
+        }
+      }
+    }
+  },
+  // author delete
+  {
+    url: '/admin/author/delete',
+    type: 'delete',
     response: config => {
       const { id } = config.query
       for (const user of List) {
         if (user.id === +id) {
           return {
             code: 20000,
-            data: user
+            data: 'success'
           }
         }
       }

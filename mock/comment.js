@@ -177,25 +177,6 @@ module.exports = [
       }
     }
   },
-
-  {
-    url: '/admin/comment/pv',
-    type: 'get',
-    response: _ => {
-      return {
-        code: 20000,
-        data: {
-          pvData: [
-            { key: 'PC', pv: 1024 },
-            { key: 'mobile', pv: 1024 },
-            { key: 'ios', pv: 1024 },
-            { key: 'android', pv: 1024 }
-          ]
-        }
-      }
-    }
-  },
-
   {
     url: '/admin/comment/create',
     type: 'post',
@@ -206,14 +187,35 @@ module.exports = [
       }
     }
   },
-
+  // comment update
   {
     url: '/admin/comment/update',
-    type: 'post',
-    response: _ => {
-      return {
-        code: 20000,
-        data: 'success'
+    type: 'put',
+    response: config => {
+      const { id } = config.query
+      for (const comment of List) {
+        if (comment.id === +id) {
+          return {
+            code: 20000,
+            data: 'success'
+          }
+        }
+      }
+    }
+  },
+  // comment delete
+  {
+    url: '/admin/comment/delete',
+    type: 'delete',
+    response: config => {
+      const { id } = config.query
+      for (const comment of List) {
+        if (comment.id === +id) {
+          return {
+            code: 20000,
+            data: 'success'
+          }
+        }
       }
     }
   }

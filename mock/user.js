@@ -145,5 +145,37 @@ module.exports = [
         }
       }
     }
+  },
+  // user update
+  {
+    url: '/admin/user/update',
+    type: 'put',
+    response: config => {
+      const { id } = config.query
+      for (const user of List) {
+        if (user.id === +id) {
+          return {
+            code: 20000,
+            data: 'success'
+          }
+        }
+      }
+    }
+  },
+  // user delete
+  {
+    url: '/admin/user/delete',
+    type: 'delete',
+    response: config => {
+      const { id } = config.query
+      for (const user of List) {
+        if (user.id === +id) {
+          return {
+            code: 20000,
+            data: 'success'
+          }
+        }
+      }
+    }
   }
 ]

@@ -103,12 +103,22 @@
           <router-link :to="'/article/edit/'+scope.row.id" title="编辑">
             <el-button type="primary" size="small" icon="el-icon-edit" />
           </router-link>
-          <router-link :to="'/article/edit/'+scope.row.id" title="删除">
-            <el-button type="danger" size="small" icon="el-icon-delete" />
-          </router-link>
+          <el-button slot="reference" type="danger" size="small" icon="el-icon-delete" @click="openDeleteArticle(scope.row)" />
         </template>
       </el-table-column>
     </el-table>
+
+    <el-dialog
+      title="提示"
+      :visible.sync="dialogVisible"
+      width="30%"
+    >
+      <span>你确定要删除文章 <span style="color: red">{{ delete_article.title }}</span> 吗？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="deleteArticle(delete_article.id)">确 定</el-button>
+      </span>
+    </el-dialog>
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
   </div>
@@ -117,7 +127,7 @@
 <script>
 import { fetchList } from '@/api/article'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
-import Sticky from '@/components/Sticky' // 粘性header组件
+import Sticky from '@/components/Sticky'
 
 export default {
   name: 'ArticleList',
@@ -145,6 +155,8 @@ export default {
       search_date: '',
       search_recommend: '',
       search_top: '',
+      dialogVisible: false,
+      delete_article: '',
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',
@@ -198,6 +210,15 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
+    },
+    openDeleteArticle(val) {
+      this.dialogVisible = true
+      this.delete_article = val
+    },
+    deleteArticle(id) {
+      this.$message.success('删除成功')
+      this.dialogVisible = false
+      this.getList()
     }
   }
 }

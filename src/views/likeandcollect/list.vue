@@ -1,15 +1,14 @@
 <template>
   <div v-if="list" class="app-container">
-    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].id" style="text-align: left;">
-      <el-input v-model="search_content" placeholder="请输入验证账号" style="width: 200px;margin-right: 20px">搜索</el-input>
-      <el-select v-model="search_type" style="width: 120px;margin-right: 20px" placeholder="验证类型">
-        <el-option label="注册" value="register" />
-        <el-option label="找回密码" value="find-password" />
-        <el-option label="更换绑定" value="change-blind" />
+    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].id" style="text-align: left">
+      <el-input v-model="search_content" placeholder="请输入用户名/邮箱/手机号" style="width: 200px;margin-right: 20px">搜索</el-input>
+      <el-select v-model="search_type" style="width: 120px;margin-right: 20px" placeholder="是否收藏">
+        <el-option label="已收藏" value="collect" />
+        <el-option label="未收藏" value="not_collect" />
       </el-select>
-      <el-select v-model="search_method" style="width: 120px;margin-right: 20px" placeholder="验证方式">
-        <el-option label="手机号" value="phone" />
-        <el-option label="邮箱" value="email" />
+      <el-select v-model="search_method" style="width: 120px;margin-right: 20px" placeholder="是否喜欢">
+        <el-option label="已喜欢" value="like" />
+        <el-option label="未喜欢" value="not_like" />
       </el-select>
       <el-date-picker
         v-model="search_date"
@@ -39,35 +38,35 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" width="120px" label="验证码">
+      <el-table-column align="center" width="120px" label="作者">
         <template slot-scope="scope">
-          <span>{{ scope.row.code }}</span>
+          <span>{{ scope.row.author.user.username }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" width="180px" label="验证类型">
+      <el-table-column align="center" label="文章">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.type === 'register'?'success': scope.row.type === 'find-password'?'warning':'info'">
-            <span>{{ scope.row.type === 'register'?'注册': scope.row.type === 'find-password'?'找回密码':'更换绑定' }}</span>
+          <span>{{ scope.row.article.title }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" width="140px" label="是否喜欢">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.like_status === 'true'?'success':'info'">
+            <span>{{ scope.row.like_status === 'true'?'已喜欢':'未喜欢' }}</span>
           </el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="验证账号">
+      <el-table-column align="center" width="140px" label="是否收藏">
         <template slot-scope="scope">
-          <span>{{ scope.row.info }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="100px" align="center" label="验证方式">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.method==='phone'?'success':'info'">
-            {{ scope.row.method === 'phone' ?'手机':'邮箱' }}
+          <el-tag :type="scope.row.collect_status === 'true'?'success':'info'">
+            <span>{{ scope.row.collect_status === 'true'?'已收藏':'未收藏' }}</span>
           </el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column width="160px" prop="time" sortable align="center" label="发送时间">
+      <el-table-column width="160px" prop="time" sortable align="center" label="时间">
         <template slot-scope="scope">
           <span>{{ scope.row.time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
@@ -75,10 +74,10 @@
 
       <el-table-column align="center" label="操作" width="120" fixed="right">
         <template slot-scope="scope">
-          <router-link :to="'/verification-code/edit/'+scope.row.id" title="编辑">
+          <router-link :to="'/likeandcollect/edit/'+scope.row.id" title="编辑">
             <el-button type="primary" size="small" icon="el-icon-edit" />
           </router-link>
-          <router-link :to="'/verification-code/edit/'+scope.row.id" title="删除">
+          <router-link :to="'/likeandcollect/edit/'+scope.row.id" title="删除">
             <el-button type="danger" size="small" icon="el-icon-delete" />
           </router-link>
         </template>
@@ -92,10 +91,10 @@
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Sticky from '@/components/Sticky' // 粘性header组件
-import { getVerificationCodeList } from '@/api/verification-code'
+import { fetchList } from '@/api/likeandcollect'
 
 export default {
-  name: 'VerificationCodeList',
+  name: 'LikeAndCollectList',
   components: { Pagination, Sticky },
   filters: {
     statusFilter(status) {
@@ -157,7 +156,7 @@ export default {
     getList() {
       this.listLoading = true
       // console.log('用户传过来的id')
-      getVerificationCodeList(this.listQuery).then(response => {
+      fetchList(this.listQuery).then(response => {
         console.log(response.data.items)
         this.list = response.data.items
         this.total = response.data.total

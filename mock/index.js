@@ -8,6 +8,10 @@ const author = require('./author')
 const verificationCode = require('./verification-code')
 const comment = require('./comment')
 const category = require('./category')
+const likeandcollect = require('./likeandcollect')
+const mediafile = require('./mediafile')
+const loginhistory = require('./loginhistory')
+const banner = require('./banner')
 const search = require('./remote-search')
 
 const mocks = [
@@ -18,7 +22,11 @@ const mocks = [
   ...author,
   ...comment,
   ...category,
-  ...verificationCode
+  ...likeandcollect,
+  ...mediafile,
+  ...loginhistory,
+  ...verificationCode,
+  ...banner
 ]
 
 // for front mock

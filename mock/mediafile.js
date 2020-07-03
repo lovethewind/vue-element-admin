@@ -6,25 +6,32 @@ const count = 100
 for (let i = 0; i < count; i++) {
   List.push(Mock.mock({
     id: '@increment',
-    code: '@integer(100000,900000,6)',
-    'type|1': ['register', 'find-password', 'change-blind'],
-    'method|1': ['phone', 'email'],
-    'info|1': ['@email', '@integer(10000000000,20000000000,11)'],
+    author: {
+      id: '@increment',
+      user: {
+        id: '@increment',
+        username: '@cfirst' + '@clast'
+      }
+    },
+    title: '@csentence',
+    url: '@url',
+    'type|1': ['image', 'video', 'audio', 'txt', 'other'],
+    count: '@integer(0,100000)',
+    size: '@integer(0,9999999)',
     time: +Mock.Random.date('T')
   }))
 }
 
 module.exports = [
-  // verification-code list
+  // mediafile list
   {
-    url: '/admin/verification-code/list',
+    url: '/admin/mediafile/list',
     type: 'get',
     response: config => {
-      const { phone, email, page = 1, limit = 10, sort } = config.query
-      console.log('用户传过来的id')
+      const { article, time, page = 1, limit = 10, sort } = config.query
       let mockList = List.filter(item => {
-        if (phone && item.type !== phone) return false
-        if (email && item.title !== email) return false
+        if (time && item.type !== time) return false
+        if (article && item.title !== article) return false
         return true
       })
 
@@ -43,31 +50,30 @@ module.exports = [
       }
     }
   },
-  // verification-code detail
+  // mediafile detail
   {
-    url: '/admin/verification-code/detail',
+    url: '/admin/mediafile/detail',
     type: 'get',
     response: config => {
       const { id } = config.query
-      console.log('用户传过来的id', id)
-      for (const verificationCode of List) {
-        if (verificationCode.id === +id) {
+      for (const mediafile of List) {
+        if (mediafile.id === +id) {
           return {
             code: 20000,
-            data: verificationCode
+            data: mediafile
           }
         }
       }
     }
   },
-  // verification-code update
+  // mediafile update
   {
-    url: '/admin/verification-code/update',
+    url: '/admin/mediafile/update',
     type: 'put',
     response: config => {
       const { id } = config.query
-      for (const verificationCode of List) {
-        if (verificationCode.id === +id) {
+      for (const mediafile of List) {
+        if (mediafile.id === +id) {
           return {
             code: 20000,
             data: 'success'
@@ -76,14 +82,14 @@ module.exports = [
       }
     }
   },
-  // verification-code delete
+  // mediafile delete
   {
-    url: '/admin/verification-code/delete',
+    url: '/admin/mediafile/delete',
     type: 'delete',
     response: config => {
       const { id } = config.query
-      for (const verificationCode of List) {
-        if (verificationCode.id === +id) {
+      for (const mediafile of List) {
+        if (mediafile.id === +id) {
           return {
             code: 20000,
             data: 'success'
