@@ -32,10 +32,18 @@ export function createLikeAndCollect(data) {
   })
 }
 
-export function updateArticle(data) {
+export function updateLikeAndCollect(data) {
   return request({
-    url: '/admin/article/update',
+    url: '/admin/likeandcollect/update',
     method: 'post',
     data
+  })
+}
+
+export function deleteLikeAndCollect(id) {
+  return request({
+    url: '/admin/likeandcollect/delete',
+    method: 'get',
+    params: { id }
   })
 }

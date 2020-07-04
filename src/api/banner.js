@@ -31,3 +31,11 @@ export function updateBanner(data) {
     data
   })
 }
+
+export function deleteBanner(id) {
+  return request({
+    url: '/admin/banner/delete',
+    method: 'get',
+    params: { id }
+  })
+}

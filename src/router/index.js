@@ -322,9 +322,9 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/verification-code',
+    path: '/verificationcode',
     component: Layout,
-    redirect: '/verification-code/list',
+    redirect: '/verificationcode/list',
     name: 'VerificationCode',
     meta: {
       title: '验证码管理',
@@ -333,19 +333,19 @@ export const constantRoutes = [
     children: [
       {
         path: 'list',
-        component: () => import('@/views/verification-code/list'),
+        component: () => import('@/views/verificationcode/list'),
         name: 'VerificationCodeList',
         meta: { title: '验证码列表', icon: 'list' }
       },
       {
         path: 'create',
-        component: () => import('@/views/verification-code/create'),
+        component: () => import('@/views/verificationcode/create'),
         name: 'VerificationCodeCreate',
         meta: { title: '新建验证码', icon: 'edit' }
       },
       {
         path: 'edit/:id(\\d+)',
-        component: () => import('@/views/verification-code/edit'),
+        component: () => import('@/views/verificationcode/edit'),
         name: 'VerificationCodeEdit',
         meta: { title: '验证码修改', icon: 'edit' },
         hidden: true

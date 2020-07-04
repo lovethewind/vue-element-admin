@@ -1,6 +1,6 @@
 <template>
   <div v-if="list" class="app-container">
-    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].id" style="text-align: left;">
+    <sticky :z-index="10" :class-name="'sub-navbar '" style="text-align: left;">
       <el-input v-model="search_content" placeholder="请输入验证账号" style="width: 200px;margin-right: 20px">搜索</el-input>
       <el-select v-model="search_type" style="width: 120px;margin-right: 20px" placeholder="验证类型">
         <el-option label="注册" value="register" />
@@ -75,15 +75,25 @@
 
       <el-table-column align="center" label="操作" width="120" fixed="right">
         <template slot-scope="scope">
-          <router-link :to="'/verification-code/edit/'+scope.row.id" title="编辑">
+          <router-link :to="'/轮播图/edit/'+scope.row.id" title="编辑">
             <el-button type="primary" size="small" icon="el-icon-edit" />
           </router-link>
-          <router-link :to="'/verification-code/edit/'+scope.row.id" title="删除">
-            <el-button type="danger" size="small" icon="el-icon-delete" />
-          </router-link>
+          <el-button slot="reference" type="danger" size="small" icon="el-icon-delete" @click="openDeleteDialog(scope.row)" />
         </template>
       </el-table-column>
     </el-table>
+
+    <el-dialog
+      title="提示"
+      :visible.sync="dialogVisible"
+      width="30%"
+    >
+      <span>你确定要删除验证码 <span style="color: red">{{ delete_content.code }}</span> 吗？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="deleteContent(delete_content.id)">确 定</el-button>
+      </span>
+    </el-dialog>
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
   </div>
@@ -92,7 +102,7 @@
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Sticky from '@/components/Sticky' // 粘性header组件
-import { getVerificationCodeList } from '@/api/verification-code'
+import { getVerificationCodeList } from '@/api/verificationcode'
 
 export default {
   name: 'VerificationCodeList',
@@ -120,6 +130,8 @@ export default {
       search_date: '',
       search_method: '',
       search_type: '',
+      dialogVisible: false,
+      delete_content: '',
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',
@@ -175,6 +187,15 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
+    },
+    openDeleteDialog(val) {
+      this.dialogVisible = true
+      this.delete_content = val
+    },
+    deleteContent(id) {
+      this.$message.success('删除成功')
+      this.dialogVisible = false
+      this.getList()
     }
   }
 }

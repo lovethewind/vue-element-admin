@@ -5,7 +5,7 @@ const user = require('./user')
 const role = require('./role')
 const article = require('./article')
 const author = require('./author')
-const verificationCode = require('./verification-code')
+const verificationcode = require('./verificationcode')
 const comment = require('./comment')
 const category = require('./category')
 const likeandcollect = require('./likeandcollect')
@@ -25,7 +25,7 @@ const mocks = [
   ...likeandcollect,
   ...mediafile,
   ...loginhistory,
-  ...verificationCode,
+  ...verificationcode,
   ...banner
 ]
 

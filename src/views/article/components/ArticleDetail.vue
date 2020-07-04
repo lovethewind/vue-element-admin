@@ -34,7 +34,7 @@
                 <el-col :span="8">
                   <el-form-item label="作者:" class="postInfo-container-item">
                     <el-select
-                      v-model="postForm.author"
+                      v-model="postForm.author.user.username"
                       :remote-method="getRemoteUserList"
                       filterable
                       default-first-option
@@ -49,7 +49,7 @@
                 <el-col :span="8">
                   <el-form-item label="发布时间:" class="postInfo-container-item">
                     <el-date-picker
-                      v-model="displayTime"
+                      v-model="postForm.time"
                       type="datetime"
                       format="yyyy-MM-dd HH:mm:ss"
                       placeholder="选择日期和时间"
@@ -61,7 +61,7 @@
                   <el-form-item label="分类:" prop="category" class="postInfo-container-item">
                     <el-cascader
                       ref="cascader"
-                      v-model="postForm.category"
+                      v-model="postForm.category.id"
                       :options="options"
                       expand-trigger="hover"
                       :props="optionProps"
@@ -95,17 +95,11 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="评论:">
-              <!--          <CommentDropdown v-model="postForm.comment_disabled" />-->
-              <el-radio v-model="postForm.comment_disabled" label="false">允许评论</el-radio>
-              <el-radio v-model="postForm.comment_disabled" label="true">禁止评论</el-radio>
+              <el-radio v-model="postForm.comment_disabled" :label="false">允许评论</el-radio>
+              <el-radio v-model="postForm.comment_disabled" :label="true">禁止评论</el-radio>
             </el-form-item>
           </el-col>
         </el-row>
-
-        <!--        <el-form-item style="margin-bottom: 40px;" label="简要描述:">-->
-        <!--          <el-input v-model="postForm.content_short" :rows="1" type="textarea" class="article-textarea" autosize placeholder="输入简要描述" />-->
-        <!--          <br><span v-show="contentShortLength" class="word-counter">已输入{{ contentShortLength }}个字符</span>-->
-        <!--        </el-form-item>-->
 
         <el-form-item prop="content" label="正文:" style="margin-bottom: 30px;">
           <UE id="ueditor" ref="ueditor" update_content="editor_article" @editor_article="editor_article" />
@@ -116,28 +110,25 @@
 </template>
 
 <script>
-// import Tinymce from '@/components/Tinymce'
-// import Upload from '@/components/Upload/SingleImage3'
 import MDinput from '@/components/MDinput'
 import Sticky from '@/components/Sticky' // 粘性header组件
-import { validURL } from '@/utils/validate'
-import { fetchArticle } from '@/api/article'
+import { fetchArticle, updateArticle, createArticle } from '@/api/article'
 import { searchUser } from '@/api/remote-search'
-// import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
 import UE from '@/views/article/components/UE'
 
 const defaultForm = {
   status: '草稿',
   title: '', // 文章题目
+  author: {
+    user: {
+      username: ''
+    }
+  },
   content: '', // 文章内容
-  content_short: '', // 文章摘要
-  source_uri: '', // 文章外链
-  image_uri: '', // 文章图片
-  display_time: undefined, // 前台展示时间
+  time: undefined, // 前台展示时间
   id: undefined,
   comment_disabled: 'false',
-  importance: 0,
-  category: 1,
+  category: '',
   recommend: false,
   top: false
 }
@@ -155,26 +146,7 @@ export default {
   data() {
     const validateRequire = (rule, value, callback) => {
       if (value === '') {
-        // this.$message({
-        //   message: rule.field + '为必填项',
-        //   type: 'error'
-        // })
         callback(new Error(rule.field + '为必填项'))
-      } else {
-        callback()
-      }
-    }
-    const validateSourceUri = (rule, value, callback) => {
-      if (value) {
-        if (validURL(value)) {
-          callback()
-        } else {
-          this.$message({
-            message: '外链url填写不正确',
-            type: 'error'
-          })
-          callback(new Error('外链url填写不正确'))
-        }
       } else {
         callback()
       }
@@ -244,14 +216,12 @@ export default {
       optionProps: {
         value: 'id',
         label: 'name',
-        checkStrictly: 'true'
-        // multiple:"true"
+        checkStrictly: 'true',
+        multiple: 'true'
       },
       rules: {
-        image_uri: [{ validator: validateRequire }],
         title: [{ validator: validateRequire }],
         content: [{ validator: validateRequire }],
-        source_uri: [{ validator: validateSourceUri, trigger: 'blur' }],
         category: [
           {
             type: 'array',
@@ -265,19 +235,16 @@ export default {
     }
   },
   computed: {
-    contentShortLength() {
-      return this.postForm.content_short.length
-    },
     displayTime: {
       // set and get is useful when the data
       // returned by the back end api is different from the front end
       // back end return => "2013-06-25 06:59:25"
       // front end need timestamp => 1372114765000
       get() {
-        return (+new Date(this.postForm.display_time))
+        return (+new Date(this.postForm.time))
       },
       set(val) {
-        this.postForm.display_time = new Date(val)
+        this.postForm.time = new Date(val)
       }
     }
   },
@@ -324,20 +291,42 @@ export default {
       document.title = `${title} - ${this.postForm.id}`
     },
     submitForm() {
-      console.log(this.postForm)
       this.$refs.postForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$notify({
-            title: '成功',
-            message: '发布文章成功',
-            type: 'success',
-            duration: 2000
-          })
-          this.postForm.status = '已发布'
-          this.loading = false
-          this.$store.dispatch('tagsView/delView', this.$route)
-          this.$router.push('/article')
+          if (this.isEdit) {
+            updateArticle(this.postForm).then(response => {
+              if (response.code === 1) {
+                this.$notify({
+                  title: '成功',
+                  message: '修改文章成功',
+                  type: 'success',
+                  duration: 2000
+                })
+                this.loading = false
+                this.$store.dispatch('tagsView/delView', this.$route)
+                this.$router.push('/article')
+              } else {
+                this.$message.error('修改文章失败，请重新尝试')
+              }
+            })
+          } else {
+            createArticle(this.postForm).then(response => {
+              if (response.code === 1) {
+                this.$notify({
+                  title: '成功',
+                  message: '添加文章成功',
+                  type: 'success',
+                  duration: 2000
+                })
+                this.loading = false
+                this.$store.dispatch('tagsView/delView', this.$route)
+                this.$router.push('/article')
+              } else {
+                this.$message.error('添加文章失败，请重新尝试')
+              }
+            })
+          }
         } else {
           console.log('error submit!!')
           return false
@@ -345,22 +334,8 @@ export default {
       })
     },
     draftForm() {
-      if (this.postForm.content.length === 0 || this.postForm.title.length === 0) {
-        this.$message({
-          message: '请填写必要的标题和内容',
-          type: 'warning'
-        })
-        return
-      }
-      this.$message({
-        message: '保存成功',
-        type: 'success',
-        showClose: true,
-        duration: 1000
-      })
-      this.postForm.status = '草稿'
-      this.$store.dispatch('tagsView/delView', this.$route)
-      this.$router.go(-1)
+      this.postForm.status = 'draft'
+      this.submitForm()
     },
     cancelForm() {
       this.$store.dispatch('tagsView/delView', this.$route)
@@ -379,6 +354,10 @@ export default {
 <style>
   .ql-editor {
     min-height: 200px;
+  }
+  .sub-navbar {
+  text-align: right;
+  padding-right: 20px;
   }
 </style>
 <style lang="scss" scoped>

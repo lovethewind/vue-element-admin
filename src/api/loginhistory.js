@@ -31,3 +31,11 @@ export function updateLoginHistory(data) {
     data
   })
 }
+
+export function deleteLoginHistory(id) {
+  return request({
+    url: '/admin/loginhistory/delete',
+    method: 'get',
+    params: { id }
+  })
+}

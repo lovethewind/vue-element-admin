@@ -15,9 +15,9 @@ for (let i = 0; i < count; i++) {
 }
 
 module.exports = [
-  // verification-code list
+  // verificationcode list
   {
-    url: '/admin/verification-code/list',
+    url: '/admin/verificationcode/list',
     type: 'get',
     response: config => {
       const { phone, email, page = 1, limit = 10, sort } = config.query
@@ -43,9 +43,9 @@ module.exports = [
       }
     }
   },
-  // verification-code detail
+  // verificationcode detail
   {
-    url: '/admin/verification-code/detail',
+    url: '/admin/verificationcode/detail',
     type: 'get',
     response: config => {
       const { id } = config.query
@@ -60,9 +60,9 @@ module.exports = [
       }
     }
   },
-  // verification-code update
+  // verificationcode update
   {
-    url: '/admin/verification-code/update',
+    url: '/admin/verificationcode/update',
     type: 'put',
     response: config => {
       const { id } = config.query
@@ -76,9 +76,9 @@ module.exports = [
       }
     }
   },
-  // verification-code delete
+  // verificationcode delete
   {
-    url: '/admin/verification-code/delete',
+    url: '/admin/verificationcode/delete',
     type: 'delete',
     response: config => {
       const { id } = config.query

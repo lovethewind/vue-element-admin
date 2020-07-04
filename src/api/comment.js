@@ -39,3 +39,11 @@ export function updateComment(data) {
     data
   })
 }
+
+export function deleteComment(id) {
+  return request({
+    url: '/admin/comment/delete',
+    method: 'get',
+    params: { id }
+  })
+}

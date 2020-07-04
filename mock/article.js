@@ -4,33 +4,37 @@ const List = []
 const count = 100
 
 const baseContent = '<p>I am testing data, I am testing data.</p><p><img src="https://wpimg.wallstcn.com/4c69009c-0fd4-4153-b112-6cb53d1cf943"></p>'
-const image_uri = 'https://wpimg.wallstcn.com/e4558086-631c-425c-9430-56ffb46e70b3'
 
 for (let i = 0; i < count; i++) {
   List.push(Mock.mock({
     id: '@increment',
     title: '@ctitle(5, 20)',
-    author: '@cfirst' + '@clast',
-    timestamp: +Mock.Random.date('T'),
-    reviewer: '@first',
-    content_short: 'mock data',
+    author: {
+      id: '@increment',
+      user: {
+        id: '@increment',
+        username: '@cfirst' + '@clast'
+      }
+    },
     content: baseContent,
-    forecast: '@float(0, 100, 2, 2)',
-    importance: '@integer(1, 3)',
-    'type|1': ['CN', 'US', 'JP', 'EU'],
-    'status|1': ['publish', 'draft'],
+    category: {
+      id: '@increment',
+      name: '@cword(4,6)',
+      parent_id: {
+        id: '@increment',
+        name: '@cword(4,6)',
+        'status|1': ['true', 'false']
+      }
+    },
+    'status|1': ['publish', 'check', 'draft', 'delete'],
     'top|1': [true, false],
     'recommend|1': [true, false],
     view_count: '@integer(0,9999)',
     comment_count: '@integer(0,9999)',
     like_count: '@integer(0,9999)',
     collect_count: '@integer(0,9999)',
-    category: '@integer(1,4)',
-    display_time: '@datetime',
-    'comment_disabled|1': ['true', 'false'],
-    pageviews: '@integer(300, 5000)',
-    image_uri,
-    platforms: ['a-platform']
+    time: '@datetime',
+    'comment_disabled|1': [true, false]
   }))
 }
 
@@ -39,12 +43,14 @@ module.exports = [
     url: '/admin/article/list',
     type: 'get',
     response: config => {
-      const { importance, type, title, page = 1, limit = 10, sort } = config.query
-
+      const { search_comment_disabled, search_status, search_top, search_recommend, search_date, search_content, page = 1, limit = 10, sort } = config.query
       let mockList = List.filter(item => {
-        if (importance && item.importance !== +importance) return false
-        if (type && item.type !== type) return false
-        if (title && item.title.indexOf(title) < 0) return false
+        if (search_comment_disabled && item.comment_disabled.toString() !== search_comment_disabled) return false
+        if (search_status && item.status !== search_status) return false
+        if (search_top && item.top.toString() !== search_top) return false
+        if (search_recommend && item.recommend.toString() !== search_recommend) return false
+        if (search_date && item.time <= search_date[0] && item.time >= search_date[1]) return false
+        if (search_content && item.title.indexOf(search_content) < 0 && item.content.indexOf(search_content) < 0 && item.author.user.username.indexOf(search_content) < 0) return false
         return true
       })
 
@@ -53,7 +59,7 @@ module.exports = [
       }
 
       const pageList = mockList.filter((item, index) => index < limit * page && index >= limit * (page - 1))
-
+      console.log('我在搜索', pageList, pageList.length)
       return {
         code: 20000,
         data: {
@@ -112,7 +118,8 @@ module.exports = [
   {
     url: '/admin/article/update',
     type: 'put',
-    response: _ => {
+    response: config => {
+      console.log('更新文章', config.body)
       return {
         code: 20000,
         data: 'success'

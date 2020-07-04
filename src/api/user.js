@@ -31,9 +31,26 @@ export function fetchUser(id) {
     params: { id }
   })
 }
+
 export function logout() {
   return request({
     url: '/admin/user/logout',
     method: 'post'
+  })
+}
+
+export function updateUser(data) {
+  return request({
+    url: '/admin/user/update',
+    method: 'post',
+    data
+  })
+}
+
+export function deleteUser(id) {
+  return request({
+    url: '/admin/user/delete',
+    method: 'get',
+    params: { id }
   })
 }

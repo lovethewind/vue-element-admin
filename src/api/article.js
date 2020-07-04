@@ -35,7 +35,7 @@ export function createArticle(data) {
 export function updateArticle(data) {
   return request({
     url: '/admin/article/update',
-    method: 'post',
+    method: 'put',
     data
   })
 }
@@ -43,7 +43,7 @@ export function updateArticle(data) {
 export function deleteArticle(id) {
   return request({
     url: '/admin/article/delete',
-    method: 'get',
+    method: 'delete',
     params: { id }
   })
 }

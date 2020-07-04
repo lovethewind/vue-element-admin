@@ -1,6 +1,6 @@
 <template>
   <div v-if="list" class="app-container">
-    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].id">
+    <sticky :z-index="10" :class-name="'sub-navbar '">
       <el-input v-model="search_content" placeholder="请输入用户名/地址/设备名" style="width: 200px;margin:0 10px">搜索</el-input>
       <el-date-picker
         v-model="search_date"
@@ -12,7 +12,7 @@
         align="left"
         style="margin-right: 20px"
       />
-      <el-button type="success" icon="el-icon-search" style="margin-right: 250px">搜索</el-button>
+      <el-button type="success" icon="el-icon-search" style="margin-right: 250px" @click="searchList">搜索</el-button>
       <el-button type="danger" icon="el-icon-delete">批量删除</el-button>
     </sticky>
     <el-divider />
@@ -65,13 +65,22 @@
           <router-link :to="'/loginhistory/edit/'+scope.row.id" title="编辑">
             <el-button type="primary" size="small" icon="el-icon-edit" />
           </router-link>
-          <router-link :to="'/loginhistory/edit/'+scope.row.id" title="删除">
-            <el-button type="danger" size="small" icon="el-icon-delete" />
-          </router-link>
+          <el-button slot="reference" type="danger" size="small" icon="el-icon-delete" @click="openDeleteDialog(scope.row)" />
         </template>
       </el-table-column>
     </el-table>
 
+    <el-dialog
+      title="提示"
+      :visible.sync="dialogVisible"
+      width="30%"
+    >
+      <span>你确定要删除登录历史 <span style="color: red">{{ delete_content.address }}</span> 吗？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="deleteContent(delete_content.id)">确 定</el-button>
+      </span>
+    </el-dialog>
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
   </div>
 </template>
@@ -109,6 +118,8 @@ export default {
       search_date: '',
       search_method: '',
       search_type: '',
+      dialogVisible: false,
+      delete_content: '',
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',
@@ -164,6 +175,19 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
+    },
+    openDeleteDialog(val) {
+      this.dialogVisible = true
+      this.delete_content = val
+    },
+    deleteContent(id) {
+      this.$message.success('删除成功')
+      this.dialogVisible = false
+      this.getList()
+    },
+    searchList() {
+      console.log('查询日期', this.search_date)
+      this.getList()
     }
   }
 }

@@ -39,3 +39,11 @@ export function updateCategory(data) {
     data
   })
 }
+
+export function deleteCategory(id) {
+  return request({
+    url: '/admin/category/delete',
+    method: 'get',
+    params: { id }
+  })
+}

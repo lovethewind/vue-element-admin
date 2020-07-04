@@ -1,15 +1,16 @@
 <template>
   <div v-if="list" class="app-container">
-    <sticky :z-index="10" :class-name="'sub-navbar '+ list[0].id">
-      <el-input v-model="search_content" placeholder="请输入用户名/邮箱/手机号" style="width: 200px;margin-right: 20px">搜索</el-input>
-      <el-select v-model="search_sex" style="width: 80px;margin-right: 20px" placeholder="性别">
+    <sticky :z-index="10" :class-name="'sub-navbar '">
+      <el-input v-model="listQuery.search_content" placeholder="请输入用户名/邮箱/手机号" style="width: 200px;margin-right: 20px">搜索</el-input>
+      <el-select v-model="listQuery.search_sex" style="width: 80px;margin-right: 20px" placeholder="性别">
+        <el-option label="性别" value="" />
         <el-option label="男" value="male" />
         <el-option label="女" value="famale" />
         <el-option label="保密" value="security" />
       </el-select>
-      <el-input v-model="search_agestart" type="number" placeholder="年龄" label="开始年龄" style="width: 70px;font-size: 8px" /> ~ <el-input v-model="search_ageend" placeholder="年龄" type="number" label="结束年龄" style="width: 70px;font-size: 8px;margin-right: 10px" />
+      <el-input v-model="listQuery.search_agestart" type="number" placeholder="年龄" label="开始年龄" style="width: 70px;font-size: 8px" /> ~ <el-input v-model="listQuery.search_ageend" placeholder="年龄" type="number" label="结束年龄" style="width: 70px;font-size: 8px;margin-right: 10px" />
       <el-date-picker
-        v-model="search_date"
+        v-model="listQuery.search_date"
         type="datetimerange"
         :picker-options="pickerOptions"
         range-separator="至"
@@ -18,11 +19,11 @@
         align="left"
         style="margin-right: 20px"
       />
-      <el-button type="success" icon="el-icon-search" style="margin-right: 10px">搜索</el-button>
-      <el-button type="danger" icon="el-icon-delete">批量删除</el-button>
+      <el-button type="success" icon="el-icon-search" style="margin-right: 10px" @click="getList">搜索</el-button>
+      <el-button type="danger" icon="el-icon-delete" @click="openListDialog('delete')">批量删除</el-button>
     </sticky>
     <el-divider />
-    <el-table v-loading="listLoading" :data="list" :default-sort="{prop: 'user.last_login', order: 'descending'}" border fit highlight-current-row style="width: 100%">
+    <el-table ref="multipleTable" v-loading="listLoading" :data="list" :default-sort="{prop: 'user.last_login', order: 'descending'}" border fit highlight-current-row style="width: 100%">
       <el-table-column
         type="selection"
         width="40"
@@ -104,12 +105,34 @@
           <router-link :to="'/author/edit/'+scope.row.id" title="编辑">
             <el-button type="primary" size="small" icon="el-icon-edit" />
           </router-link>
-          <router-link :to="'/author/edit/'+scope.row.id" title="删除">
-            <el-button type="danger" size="small" icon="el-icon-delete" />
-          </router-link>
+          <el-button slot="reference" type="danger" size="small" icon="el-icon-delete" @click="openDeleteDialog(scope.row)" />
         </template>
       </el-table-column>
     </el-table>
+
+    <el-dialog
+      title="提示"
+      :visible.sync="dialogVisible"
+      width="30%"
+    >
+      <span>你确定要删除作者 <span v-if="delete_content" style="color: red">{{ delete_content.user.username }}</span> 吗？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="deleteContent(delete_content.id)">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog
+      title="提示"
+      :visible.sync="dialogListVisible"
+      width="30%"
+    >
+      <span>你确定要{{ operateListContent.name }}共<span style="color:red;">{{ operateListContent.length }}</span>个作者的信息吗？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogListVisible = false">取 消</el-button>
+        <el-button type="primary" @click="operateList">确 定</el-button>
+      </span>
+    </el-dialog>
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
   </div>
@@ -118,8 +141,7 @@
 <script>
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 import Sticky from '@/components/Sticky' // 粘性header组件
-import { getAuthorList } from '@/api/author'
-
+import { getAuthorList, deleteAuthor, updateAuthor } from '@/api/author'
 export default {
   name: 'AuthorList',
   components: { Pagination, Sticky },
@@ -140,13 +162,21 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 10
+        limit: 10,
+        search_content: '',
+        search_date: '',
+        search_sex: '',
+        search_agestart: '',
+        search_ageend: ''
       },
-      search_content: '',
-      search_date: '',
-      search_sex: '',
-      search_agestart: '',
-      search_ageend: '',
+      dialogVisible: false,
+      delete_content: '',
+      dialogListVisible: false,
+      operateListContent: {
+        name: '',
+        length: '',
+        type: ''
+      },
       pickerOptions: {
         shortcuts: [{
           text: '最近一周',
@@ -201,6 +231,54 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
+    },
+    openDeleteDialog(val) {
+      this.dialogVisible = true
+      this.delete_content = val
+    },
+    deleteContent(id) {
+      this.$message.success('删除成功')
+      this.dialogVisible = false
+      this.getList()
+    },
+    openListDialog(val) {
+      const selectData = this.$refs.multipleTable.selection
+      if (selectData.length <= 0) {
+        this.$message.info('请选中至少一条数据')
+      } else {
+        this.operateListContent.length = selectData.length
+        if (val === 'forbid') {
+          this.operateListContent.name = '（取消）禁用'
+          this.operateListContent.type = 'forbid'
+        } else {
+          this.operateListContent.name = '删除'
+          this.operateListContent.type = 'delete'
+        }
+        this.dialogListVisible = true
+      }
+    },
+    operateList() {
+      const selectData = this.$refs.multipleTable.selection
+      for (let i = 0; i < selectData.length; i++) {
+        if (this.operateListContent.type === 'forbid') {
+          selectData[i].status = !selectData[i].status
+          updateAuthor(selectData[i]).then(response => {
+            if (response.code === 0) {
+              this.$message.error('（取消）禁用作者' + selectData[i].user.username + '失败')
+            }
+          })
+        } else {
+          selectData[i].status === 'delete' ? console.log() : selectData[i].recommend = 'delete'
+          deleteAuthor(selectData[i].id).then(response => {
+            if (response.code === 0) {
+              this.$message.error('删除' + selectData[i].user.username + '失败')
+            }
+          })
+        }
+      }
+      this.$message.success('操作成功')
+      this.dialogListVisible = false
+      this.getList()
     }
   }
 }

@@ -31,3 +31,11 @@ export function updateMediaFile(data) {
     data
   })
 }
+
+export function deleteMediaFile(id) {
+  return request({
+    url: '/admin/mediafile/delete',
+    method: 'get',
+    params: { id }
+  })
+}

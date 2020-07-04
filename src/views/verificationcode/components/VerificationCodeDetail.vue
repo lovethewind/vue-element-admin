@@ -66,7 +66,7 @@
 
 <script>
 import Sticky from '@/components/Sticky' // 粘性header组件
-import { fetchVerificationCode } from '@/api/verification-code'
+import { fetchVerificationCode } from '@/api/verificationcode'
 import UE from '@/views/article/components/UE'
 
 const defaultForm = {
@@ -159,7 +159,7 @@ export default {
           })
           this.loading = false
           this.$store.dispatch('tagsView/delView', this.$route)
-          this.$router.push('/verification-code')
+          this.$router.push('/verificationcode')
         } else {
           console.log('error submit!!')
           return false
